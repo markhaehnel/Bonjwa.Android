@@ -1,0 +1,2 @@
+rootProject.name='Bonjwa'
+include ':app'
