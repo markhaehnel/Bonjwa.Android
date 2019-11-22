@@ -4,13 +4,8 @@ import androidx.compose.Composable
 import androidx.compose.Model
 import androidx.compose.unaryPlus
 import androidx.ui.animation.Crossfade
-import androidx.ui.core.Text
-import androidx.ui.core.dp
-import androidx.ui.graphics.Color
-import androidx.ui.layout.*
 import androidx.ui.material.*
 import androidx.ui.material.surface.Surface
-import androidx.ui.tooling.preview.Preview
 import xyz.haehnel.bonjwa.ui.home.HomeScreen
 
 sealed class Screen {
@@ -38,7 +33,7 @@ private fun AppContent() {
     Crossfade(BonjwaAppModel.currentScreen) { screen ->
         Surface(color = +themeColor { background }) {
             when (screen) {
-                is Screen.Home -> HomeScreen { navigateTo( Screen.Settings ) }
+                is Screen.Home -> HomeScreen { navigateTo(Screen.Settings) }
                 is Screen.Settings -> SettingsScreen { navigateTo(Screen.Home) }
             }
         }
