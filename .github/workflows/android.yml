@@ -1,15 +1,13 @@
-name: Android CI
+name: CI
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v1
-    - name: set up JDK 1.8
+    - name: Setup JDK
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
