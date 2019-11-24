@@ -1,9 +1,10 @@
 package xyz.haehnel.bonjwa.ui.home
 
-import androidx.compose.Composable
-import androidx.compose.Model
-import androidx.compose.state
-import androidx.compose.unaryPlus
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.*
+import androidx.core.content.ContextCompat.startActivity
+import androidx.ui.core.ContextAmbient
 import androidx.ui.core.Text
 import androidx.ui.core.dp
 import androidx.ui.foundation.Clickable
@@ -21,8 +22,11 @@ import kotlinx.coroutines.withContext
 import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.api.BonjwaScheduleItem
 import xyz.haehnel.bonjwa.repo.ScheduleRepository
+import java.time.Instant
 import java.time.ZoneOffset
 import java.util.*
+import kotlin.coroutines.coroutineContext
+import kotlin.math.exp
 
 val weekdays =
     mapOf(
@@ -36,21 +40,17 @@ val weekdays =
     )
 
 @Model
-private object ScheduleModel {
-    init {
-        getSchedule()
-    }
-
-    var isLoading: Boolean = true
+class ScheduleModel(
+    var isLoading: Boolean = true,
     var schedule: MutableList<BonjwaScheduleItem> = mutableListOf()
-    fun getSchedule() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val retrievedSchedule = ScheduleRepository().getSchedule()
-            withContext(Dispatchers.Main) {
-                schedule.clear()
-                schedule.addAll(retrievedSchedule)
-                isLoading = false
-            }
+) {
+
+    fun fetchSchedule() = CoroutineScope(Dispatchers.IO).launch {
+        val retrievedSchedule = ScheduleRepository().getSchedule()
+        withContext(Dispatchers.Main) {
+            schedule.clear()
+            schedule.addAll(retrievedSchedule)
+            isLoading = false
         }
     }
 }
@@ -61,6 +61,12 @@ fun HomeScreen(navigateToSettings: () -> Unit) {
 
     val refreshImage = +imageResource(R.drawable.ic_refresh)
 
+    val model = +memo { ScheduleModel() }
+
+    +onActive {
+        model.fetchSchedule()
+    }
+
     FlexColumn {
         inflexible {
             TopAppBar(
@@ -70,7 +76,7 @@ fun HomeScreen(navigateToSettings: () -> Unit) {
             ) { actionImage ->
                 AppBarIcon(
                     icon = actionImage,
-                    onClick = { ScheduleModel.isLoading = true; ScheduleModel.getSchedule() })
+                    onClick = { model.isLoading = true; model.fetchSchedule() })
             }
 
             TabRow(
@@ -80,15 +86,16 @@ fun HomeScreen(navigateToSettings: () -> Unit) {
                 indicatorContainer = @Composable {}
             ) { index, text ->
                 Padding(8.dp) {
-                    WeekdayCard(
+                    TabCard(
                         text = text.second,
                         selected = selectedTabIndex.value == index,
-                        onClick = { selectedTabIndex.value = index })
+                        onClick = { selectedTabIndex.value = index }
+                    )
                 }
             }
         }
         flexible(flex = 1f) {
-            if (ScheduleModel.isLoading) {
+            if (model.isLoading) {
                 Column(
                     crossAxisSize = LayoutSize.Expand,
                     crossAxisAlignment = CrossAxisAlignment.Center,
@@ -105,31 +112,34 @@ fun HomeScreen(navigateToSettings: () -> Unit) {
                 }
 
                 val weekdayFromSelectedIndex = weekdaysAsList.get(selectedTabIndex.value).first
-                WeekdayColumn(weekdayFromSelectedIndex)
+
+                val c = Calendar.getInstance()
+                val weekdayItems = model.schedule.filter {
+                    c.setTime(Date.from(it.startDate));
+                    c.get(Calendar.DAY_OF_WEEK) == weekdayFromSelectedIndex
+                }
+
+                WeekdayColumn(weekdayItems)
             }
         }
     }
 }
 
 @Composable
-fun WeekdayColumn(weekday: Int) {
+fun WeekdayColumn(weekdayItems: List<BonjwaScheduleItem>) {
     VerticalScroller {
         Column(
             crossAxisSize = LayoutSize.Expand,
             crossAxisAlignment = CrossAxisAlignment.Stretch,
             modifier = Spacing(16.dp)
         ) {
-            val c = Calendar.getInstance()
-            val weekdayItems =
-                ScheduleModel.schedule.filter { c.setTime(Date.from(it.startDate)); c.get(Calendar.DAY_OF_WEEK) == weekday }
-
             if (weekdayItems.isNotEmpty()) {
                 for (item in weekdayItems) {
                     ScheduleItemCard(
                         item.title,
                         item.caster,
-                        item.startDate.atZone(ZoneOffset.systemDefault()).toLocalTime().toString(),
-                        item.endDate.atZone(ZoneOffset.systemDefault()).toLocalTime().toString()
+                        item.startDate,
+                        item.endDate
                     )
                     HeightSpacer(height = 16.dp)
                 }
@@ -141,28 +151,59 @@ fun WeekdayColumn(weekday: Int) {
 }
 
 @Composable
-fun ScheduleItemCard(title: String, caster: String, timeStart: String, timeEnd: String) {
+fun ScheduleItemCard(title: String, caster: String, timeStart: Instant, timeEnd: Instant) {
+    val context = +ambient(ContextAmbient)
+
+    val now = Instant.now()
+    val isRunning = timeStart.isBefore(now) && timeEnd.isAfter(now)
+
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = 4.dp,
-        color = +themeColor { primaryVariant }) {
+        color = if (isRunning) +themeColor { secondary } else +themeColor { primaryVariant }) {
         Ripple(bounded = true) {
             Padding(16.dp) {
-                Row(crossAxisAlignment = CrossAxisAlignment.Start) {
-                    Column(
-                        mainAxisAlignment = MainAxisAlignment.Center,
-                        mainAxisSize = LayoutSize.Expand,
-                        crossAxisAlignment = CrossAxisAlignment.Center,
-                        crossAxisSize = LayoutSize.Expand
-                    ) {
-                        Text(text = "$timeStart", style = +themeTextStyle { subtitle2 })
-                        Text(text = "—", style = +themeTextStyle { subtitle2 })
-                        Text(text = "$timeEnd", style = +themeTextStyle { subtitle2 })
+                FlexRow(crossAxisAlignment = CrossAxisAlignment.Start) {
+                    inflexible {
+                        Column(
+                            mainAxisAlignment = MainAxisAlignment.Center,
+                            mainAxisSize = LayoutSize.Expand,
+                            crossAxisAlignment = CrossAxisAlignment.Center,
+                            crossAxisSize = LayoutSize.Expand
+                        ) {
+                            Text(
+                                text = timeStart.atZone(ZoneOffset.systemDefault()).toLocalTime().toString(),
+                                style = +themeTextStyle { subtitle2 })
+                            Text(text = "—", style = +themeTextStyle { subtitle2 })
+                            Text(
+                                text = timeEnd.atZone(ZoneOffset.systemDefault()).toLocalTime().toString(),
+                                style = +themeTextStyle { subtitle2 })
+                        }
+                        WidthSpacer(width = 16.dp)
                     }
-                    WidthSpacer(width = 16.dp)
-                    Column {
-                        Text(text = title, style = +themeTextStyle { h6 })
-                        Text(text = caster, style = +themeTextStyle { subtitle1 })
+                    expanded(1f) {
+
+                        Column {
+                            Text(text = title, style = +themeTextStyle { h6 })
+                            Text(text = caster, style = +themeTextStyle { subtitle1 })
+                        }
+                    }
+                    inflexible {
+                        if (isRunning) {
+                            WidthSpacer(width = 16.dp)
+                            Column(
+                                mainAxisAlignment = MainAxisAlignment.Center,
+                                mainAxisSize = LayoutSize.Expand,
+                                crossAxisAlignment = CrossAxisAlignment.Center,
+                                crossAxisSize = LayoutSize.Expand
+                            ) {
+                                Button(text = "Anschauen", onClick = {
+                                    val intent = Intent(Intent.ACTION_VIEW)
+                                    intent.data = Uri.parse("https://twitch.tv/bonjwa")
+                                    context.startActivity(intent)
+                                })
+                            }
+                        }
                     }
                 }
             }
@@ -170,8 +211,9 @@ fun ScheduleItemCard(title: String, caster: String, timeStart: String, timeEnd: 
     }
 }
 
+
 @Composable
-fun WeekdayCard(text: String, selected: Boolean, onClick: () -> Unit) {
+fun TabCard(text: String, selected: Boolean, onClick: () -> Unit = {}) {
     Card(
         shape = RoundedCornerShape(50),
         elevation = 4.dp,
