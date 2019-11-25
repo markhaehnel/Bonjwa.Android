@@ -3,7 +3,6 @@ package xyz.haehnel.bonjwa.ui.home
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.*
-import androidx.core.content.ContextCompat.startActivity
 import androidx.ui.core.ContextAmbient
 import androidx.ui.core.Text
 import androidx.ui.core.dp
@@ -25,8 +24,6 @@ import xyz.haehnel.bonjwa.repo.ScheduleRepository
 import java.time.Instant
 import java.time.ZoneOffset
 import java.util.*
-import kotlin.coroutines.coroutineContext
-import kotlin.math.exp
 
 val weekdays =
     mapOf(
@@ -56,7 +53,7 @@ class ScheduleModel(
 }
 
 @Composable
-fun HomeScreen(navigateToSettings: () -> Unit) {
+fun HomeScreen() {
     val selectedTabIndex = +state { -1 }
 
     val refreshImage = +imageResource(R.drawable.ic_refresh)
@@ -111,11 +108,11 @@ fun HomeScreen(navigateToSettings: () -> Unit) {
                         weekdaysAsList.indexOfFirst { it.first == c.get(Calendar.DAY_OF_WEEK) }
                 }
 
-                val weekdayFromSelectedIndex = weekdaysAsList.get(selectedTabIndex.value).first
+                val weekdayFromSelectedIndex = weekdaysAsList[selectedTabIndex.value].first
 
                 val c = Calendar.getInstance()
                 val weekdayItems = model.schedule.filter {
-                    c.setTime(Date.from(it.startDate));
+                    c.time = Date.from(it.startDate)
                     c.get(Calendar.DAY_OF_WEEK) == weekdayFromSelectedIndex
                 }
 
@@ -127,6 +124,8 @@ fun HomeScreen(navigateToSettings: () -> Unit) {
 
 @Composable
 fun WeekdayColumn(weekdayItems: List<BonjwaScheduleItem>) {
+    //TODO: extract composable with it's children to separate file
+
     VerticalScroller {
         Column(
             crossAxisSize = LayoutSize.Expand,
@@ -135,12 +134,7 @@ fun WeekdayColumn(weekdayItems: List<BonjwaScheduleItem>) {
         ) {
             if (weekdayItems.isNotEmpty()) {
                 for (item in weekdayItems) {
-                    ScheduleItemCard(
-                        item.title,
-                        item.caster,
-                        item.startDate,
-                        item.endDate
-                    )
+                    ScheduleItemCard(item)
                     HeightSpacer(height = 16.dp)
                 }
             } else {
@@ -151,11 +145,13 @@ fun WeekdayColumn(weekdayItems: List<BonjwaScheduleItem>) {
 }
 
 @Composable
-fun ScheduleItemCard(title: String, caster: String, timeStart: Instant, timeEnd: Instant) {
+fun ScheduleItemCard(item: BonjwaScheduleItem) {
+    //TODO: implement cancelled state
+
     val context = +ambient(ContextAmbient)
 
     val now = Instant.now()
-    val isRunning = timeStart.isBefore(now) && timeEnd.isAfter(now)
+    val isRunning = item.startDate.isBefore(now) && item.endDate.isAfter(now)
 
     Card(
         shape = RoundedCornerShape(8.dp),
@@ -172,11 +168,19 @@ fun ScheduleItemCard(title: String, caster: String, timeStart: Instant, timeEnd:
                             crossAxisSize = LayoutSize.Expand
                         ) {
                             Text(
-                                text = timeStart.atZone(ZoneOffset.systemDefault()).toLocalTime().toString(),
+                                text = item
+                                    .startDate
+                                    .atZone(ZoneOffset.systemDefault())
+                                    .toLocalTime()
+                                    .toString(),
                                 style = +themeTextStyle { subtitle2 })
                             Text(text = "—", style = +themeTextStyle { subtitle2 })
                             Text(
-                                text = timeEnd.atZone(ZoneOffset.systemDefault()).toLocalTime().toString(),
+                                text = item
+                                    .endDate
+                                    .atZone(ZoneOffset.systemDefault())
+                                    .toLocalTime()
+                                    .toString(),
                                 style = +themeTextStyle { subtitle2 })
                         }
                         WidthSpacer(width = 16.dp)
@@ -184,8 +188,8 @@ fun ScheduleItemCard(title: String, caster: String, timeStart: Instant, timeEnd:
                     expanded(1f) {
 
                         Column {
-                            Text(text = title, style = +themeTextStyle { h6 })
-                            Text(text = caster, style = +themeTextStyle { subtitle1 })
+                            Text(text = item.title, style = +themeTextStyle { h6 })
+                            Text(text = item.caster, style = +themeTextStyle { subtitle1 })
                         }
                     }
                     inflexible {

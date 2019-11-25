@@ -6,9 +6,9 @@ import androidx.ui.layout.Column
 import androidx.ui.material.Button
 
 @Composable
-fun SettingsScreen(navigateToHome: () -> Unit) {
+fun SettingsScreen() {
     Column {
         Text(text = "Settings")
-        Button(text = "Navigate to Home", onClick = { navigateToHome() })
+        Button(text = "Navigate to Home", onClick = { navigateTo(Screen.Home) })
     }
 }
