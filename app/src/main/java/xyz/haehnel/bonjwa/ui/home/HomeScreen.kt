@@ -45,12 +45,11 @@ class ScheduleModel(
     fun fetchSchedule() {
         isLoading = true
         CoroutineScope(Dispatchers.IO).launch {
-                val retrievedSchedule = ScheduleRepository().getSchedule()
-                withContext(Dispatchers.Main) {
-                    schedule.clear()
-                    schedule.addAll(retrievedSchedule)
-                    isLoading = false
-                }
+            val retrievedSchedule = ScheduleRepository().getSchedule()
+            withContext(Dispatchers.Main) {
+                schedule.clear()
+                schedule.addAll(retrievedSchedule)
+                isLoading = false
             }
         }
     }
