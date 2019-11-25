@@ -102,6 +102,8 @@ fun HomeScreen() {
                 }
             } else {
                 val weekdaysAsList = weekdays.toList()
+
+                // Select weekday
                 if (selectedTabIndex.value == -1) {
                     val c = Calendar.getInstance()
                     selectedTabIndex.value =
@@ -116,7 +118,28 @@ fun HomeScreen() {
                     c.get(Calendar.DAY_OF_WEEK) == weekdayFromSelectedIndex
                 }
 
-                WeekdayColumn(weekdayItems)
+                if (weekdayItems.isNotEmpty()) {
+                    WeekdayColumn(weekdayItems)
+                } else {
+                    Column(
+                        crossAxisSize = LayoutSize.Expand,
+                        crossAxisAlignment = CrossAxisAlignment.Stretch,
+                        modifier = Spacing(16.dp)
+                    ) {
+                        Card(
+                            shape = RoundedCornerShape(8.dp),
+                            elevation = 4.dp,
+                            color = +themeColor { primaryVariant }) {
+                            Padding(16.dp) {
+                                if (model.schedule.isNullOrEmpty() && c.get(Calendar.DAY_OF_WEEK) == 2) {
+                                    Text(text = "Der aktuelle Sendeplan wurde noch nicht veröffentlicht.")
+                                } else {
+                                    Text(text = "Nicht auf Sendung.")
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -132,13 +155,9 @@ fun WeekdayColumn(weekdayItems: List<BonjwaScheduleItem>) {
             crossAxisAlignment = CrossAxisAlignment.Stretch,
             modifier = Spacing(16.dp)
         ) {
-            if (weekdayItems.isNotEmpty()) {
-                for (item in weekdayItems) {
-                    ScheduleItemCard(item)
-                    HeightSpacer(height = 16.dp)
-                }
-            } else {
-                Text(text = "Nicht auf Sendung.")
+            for (item in weekdayItems) {
+                ScheduleItemCard(item)
+                HeightSpacer(height = 16.dp)
             }
         }
     }
