@@ -42,12 +42,16 @@ class ScheduleModel(
     var schedule: MutableList<BonjwaScheduleItem> = mutableListOf()
 ) {
 
-    fun fetchSchedule() = CoroutineScope(Dispatchers.IO).launch {
-        val retrievedSchedule = ScheduleRepository().getSchedule()
-        withContext(Dispatchers.Main) {
-            schedule.clear()
-            schedule.addAll(retrievedSchedule)
-            isLoading = false
+    fun fetchSchedule() {
+        isLoading = true
+        CoroutineScope(Dispatchers.IO).launch {
+                val retrievedSchedule = ScheduleRepository().getSchedule()
+                withContext(Dispatchers.Main) {
+                    schedule.clear()
+                    schedule.addAll(retrievedSchedule)
+                    isLoading = false
+                }
+            }
         }
     }
 }
@@ -73,7 +77,7 @@ fun HomeScreen() {
             ) { actionImage ->
                 AppBarIcon(
                     icon = actionImage,
-                    onClick = { model.isLoading = true; model.fetchSchedule() })
+                    onClick = { model.fetchSchedule() })
             }
 
             TabRow(
