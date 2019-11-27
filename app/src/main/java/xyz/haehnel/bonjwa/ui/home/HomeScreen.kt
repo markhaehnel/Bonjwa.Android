@@ -178,7 +178,11 @@ fun ScheduleItemCard(item: BonjwaScheduleItem) {
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = 4.dp,
-        color = if (isRunning) +themeColor { secondary } else +themeColor { primaryVariant }) {
+        color = when {
+            item.cancelled -> +themeColor { error }
+            isRunning -> +themeColor { secondary }
+            else -> +themeColor { primaryVariant }
+        }) {
         Ripple(bounded = true) {
             Padding(16.dp) {
                 FlexRow(crossAxisAlignment = CrossAxisAlignment.Start) {
