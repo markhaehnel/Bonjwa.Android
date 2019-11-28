@@ -5,11 +5,11 @@ import com.squareup.moshi.FromJson
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.ToJson
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import org.threeten.bp.Instant
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import xyz.haehnel.bonjwa.api.BonjwaScheduleItem
 import xyz.haehnel.bonjwa.api.BonjwaService
-import java.time.Instant
 
 class ScheduleRepository {
     suspend fun getSchedule(): List<BonjwaScheduleItem> {

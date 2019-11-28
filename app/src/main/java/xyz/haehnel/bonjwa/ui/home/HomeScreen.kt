@@ -18,11 +18,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.threeten.bp.DateTimeUtils
+import org.threeten.bp.Instant
+import org.threeten.bp.ZoneOffset
 import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.api.BonjwaScheduleItem
 import xyz.haehnel.bonjwa.repo.ScheduleRepository
-import java.time.Instant
-import java.time.ZoneOffset
 import java.util.*
 
 val weekdays =
@@ -117,7 +118,7 @@ fun HomeScreen() {
 
                 val c = Calendar.getInstance()
                 val weekdayItems = model.schedule.filter {
-                    c.time = Date.from(it.startDate)
+                    c.time = DateTimeUtils.toDate(it.startDate)
                     c.get(Calendar.DAY_OF_WEEK) == weekdayFromSelectedIndex
                 }
 

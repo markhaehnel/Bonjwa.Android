@@ -1,8 +1,8 @@
 package xyz.haehnel.bonjwa.api
 
 import kotlinx.coroutines.Deferred
+import org.threeten.bp.Instant
 import retrofit2.http.GET
-import java.time.Instant
 
 interface BonjwaService {
     @GET("schedule")
