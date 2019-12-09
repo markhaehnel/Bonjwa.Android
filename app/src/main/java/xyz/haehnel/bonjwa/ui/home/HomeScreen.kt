@@ -24,6 +24,7 @@ import org.threeten.bp.ZoneOffset
 import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.api.BonjwaScheduleItem
 import xyz.haehnel.bonjwa.repo.ScheduleRepository
+import java.lang.Exception
 import java.util.*
 
 val weekdays =
@@ -39,19 +40,29 @@ val weekdays =
 
 @Model
 class ScheduleModel(
-    var isLoading: Boolean = true,
-    var schedule: MutableList<BonjwaScheduleItem> = mutableListOf()
+    var isLoading: Boolean = false,
+    var schedule: MutableList<BonjwaScheduleItem> = mutableListOf(),
+    var error: String? = null
 ) {
 
     fun fetchSchedule() {
+        error = null
         isLoading = true
         CoroutineScope(Dispatchers.IO).launch {
-            val retrievedSchedule = ScheduleRepository().getSchedule()
-            withContext(Dispatchers.Main) {
-                schedule.clear()
-                schedule.addAll(retrievedSchedule)
-                isLoading = false
+            try {
+                val retrievedSchedule = ScheduleRepository().getSchedule().await()
+                withContext(Dispatchers.Main) {
+                    schedule.clear()
+                    schedule.addAll(retrievedSchedule)
+                    isLoading = false
+                }
+            } catch (ex: Exception) {
+                withContext(Dispatchers.Main) {
+                    error = "Fehler beim Laden des Sendeplans."
+                    isLoading = false
+                }
             }
+
         }
     }
 }
@@ -80,20 +91,9 @@ fun HomeScreen() {
                     onClick = { model.fetchSchedule() })
             }
 
-            TabRow(
-                items = weekdays.toList(),
-                selectedIndex = selectedTabIndex.value,
-                scrollable = true,
-                indicatorContainer = @Composable {}
-            ) { index, text ->
-                Padding(8.dp) {
-                    TabCard(
-                        text = text.second,
-                        selected = selectedTabIndex.value == index,
-                        onClick = { selectedTabIndex.value = index }
-                    )
-                }
-            }
+            TabChipRow(weekdays.toList(), selectedTabIndex, onClick = { index ->
+                selectedTabIndex.value = index
+            })
         }
         flexible(flex = 1f) {
             if (model.isLoading) {
@@ -103,6 +103,27 @@ fun HomeScreen() {
                     modifier = Spacing(16.dp)
                 ) {
                     CircularProgressIndicator(color = +themeColor { secondary })
+                }
+            } else if (model.error != null) {
+                Column(
+                    crossAxisSize = LayoutSize.Expand,
+                    crossAxisAlignment = CrossAxisAlignment.Center,
+                    modifier = Spacing(16.dp)
+                ) {
+                    Card(
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = 4.dp,
+                        color = +themeColor { error }) {
+                        Padding(16.dp) {
+                            Column(
+                                crossAxisAlignment = CrossAxisAlignment.Center
+                            ) {
+                                Text(text = model.error!!)
+                                HeightSpacer(height = 8.dp)
+                                Button(text = "Erneut versuchen", onClick =  { model.fetchSchedule() })
+                            }
+                        }
+                    }
                 }
             } else {
                 val weekdaysAsList = weekdays.toList()
@@ -244,7 +265,28 @@ fun ScheduleItemCard(item: BonjwaScheduleItem) {
 
 
 @Composable
-fun TabCard(text: String, selected: Boolean, onClick: () -> Unit = {}) {
+fun <T>TabChipRow(items: List<T>, selectedIndex: State<Int>, onClick: (selectedIndex: Int) -> Unit) {
+    TabRow(
+        items = weekdays.toList(),
+        selectedIndex = selectedIndex.value,
+        scrollable = true,
+        indicatorContainer = @Composable {}
+    ) { index, text ->
+        Padding(8.dp) {
+            TabChip(
+                text = text.second,
+                selected = selectedIndex.value == index,
+                onClick = {
+                    selectedIndex.value = index
+                    onClick(index)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun TabChip(text: String, selected: Boolean, onClick: () -> Unit = {}) {
     Card(
         shape = RoundedCornerShape(50),
         elevation = 4.dp,
