@@ -2,13 +2,15 @@ package xyz.haehnel.bonjwa.ui.home
 
 import android.content.Intent
 import android.net.Uri
+import androidx.annotation.DrawableRes
 import androidx.compose.*
+import androidx.ui.animation.Crossfade
 import androidx.ui.core.ContextAmbient
 import androidx.ui.core.Text
 import androidx.ui.core.dp
 import androidx.ui.foundation.Clickable
 import androidx.ui.foundation.VerticalScroller
-import androidx.ui.graphics.Color
+import androidx.ui.graphics.Image
 import androidx.ui.layout.*
 import androidx.ui.material.*
 import androidx.ui.material.ripple.Ripple
@@ -24,6 +26,10 @@ import org.threeten.bp.ZoneOffset
 import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.api.BonjwaScheduleItem
 import xyz.haehnel.bonjwa.repo.ScheduleRepository
+import xyz.haehnel.bonjwa.ui.BonjwaAppStatus
+import xyz.haehnel.bonjwa.ui.Screen
+import xyz.haehnel.bonjwa.ui.TopAppBarVectorButton
+import xyz.haehnel.bonjwa.ui.navigateTo
 import java.lang.Exception
 import java.util.*
 
@@ -68,13 +74,20 @@ class ScheduleModel(
     }
 }
 
+data class ActionItem(@DrawableRes val vectorResource: Int, val action: () -> Unit)
+
 @Composable
 fun HomeScreen() {
     val selectedTabIndex = +state { 0 }
-
-    val refreshImage = +imageResource(R.drawable.ic_refresh)
-
     val model = +memo { ScheduleModel() }
+
+    val actionData = listOf(
+        ActionItem(R.drawable.ic_refresh) { model.fetchSchedule() },
+        ActionItem(R.drawable.ic_settings) { navigateTo(Screen.Settings) }
+
+    )
+
+    val navigationImage = +imageResource(R.drawable.ic_logo)
 
     +onActive {
         model.fetchSchedule()
@@ -84,11 +97,14 @@ fun HomeScreen() {
         inflexible {
             TopAppBar(
                 title = { Text("Bonjwa Sendeplan") },
-                actionData = listOf(refreshImage)
-            ) { actionImage ->
-                AppBarIcon(
-                    icon = actionImage,
-                    onClick = { model.fetchSchedule() })
+                actionData = actionData,
+                navigationIcon = {
+                    AppBarIcon(
+                        icon = navigationImage,
+                        onClick = {})
+                }
+            ) { actionItem ->
+                TopAppBarVectorButton(id = actionItem.vectorResource , onClick = { actionItem.action() })
             }
         }
         flexible(1f) {
@@ -175,7 +191,7 @@ fun WeekdayColumn(weekdayItems: List<BonjwaScheduleItem>) {
             modifier = ExpandedWidth
         ) {
             for (item in weekdayItems) {
-                ScheduleItemCard(item)
+                ScheduleItemCard(item = item)
                 Divider()
             }
         }

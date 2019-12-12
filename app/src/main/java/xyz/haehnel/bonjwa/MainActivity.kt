@@ -1,6 +1,5 @@
 package xyz.haehnel.bonjwa
 
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.ui.core.setContent
