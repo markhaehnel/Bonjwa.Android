@@ -8,7 +8,7 @@ import androidx.ui.core.Text
 import androidx.ui.core.dp
 import androidx.ui.foundation.Clickable
 import androidx.ui.foundation.VerticalScroller
-import androidx.ui.foundation.shape.corner.RoundedCornerShape
+import androidx.ui.graphics.Color
 import androidx.ui.layout.*
 import androidx.ui.material.*
 import androidx.ui.material.ripple.Ripple
@@ -42,7 +42,8 @@ val weekdays =
 class ScheduleModel(
     var isLoading: Boolean = false,
     var schedule: MutableList<BonjwaScheduleItem> = mutableListOf(),
-    var error: String? = null
+    var error: String? = null,
+    var initialSelectionDone: Boolean = false
 ) {
 
     fun fetchSchedule() {
@@ -69,7 +70,7 @@ class ScheduleModel(
 
 @Composable
 fun HomeScreen() {
-    val selectedTabIndex = +state { -1 }
+    val selectedTabIndex = +state { 0 }
 
     val refreshImage = +imageResource(R.drawable.ic_refresh)
 
@@ -82,45 +83,43 @@ fun HomeScreen() {
     FlexColumn {
         inflexible {
             TopAppBar(
-                title = { Text("Bonjwa", style = (+themeTextStyle { h4 })) },
-                color = +themeColor { background },
+                title = { Text("Bonjwa Sendeplan") },
                 actionData = listOf(refreshImage)
             ) { actionImage ->
                 AppBarIcon(
                     icon = actionImage,
                     onClick = { model.fetchSchedule() })
             }
-
+        }
+        flexible(1f) {
             TabChipRow(weekdays.toList(), selectedTabIndex, onClick = { index ->
                 selectedTabIndex.value = index
             })
-        }
-        flexible(flex = 1f) {
             if (model.isLoading) {
-                Column(
-                    crossAxisSize = LayoutSize.Expand,
-                    crossAxisAlignment = CrossAxisAlignment.Center,
-                    modifier = Spacing(16.dp)
+                Row(
+                    modifier = ExpandedWidth,
+                    arrangement = Arrangement.Center
                 ) {
-                    CircularProgressIndicator(color = +themeColor { secondary })
+                    CircularProgressIndicator((+MaterialTheme.colors()).secondary)
                 }
             } else if (model.error != null) {
                 Column(
-                    crossAxisSize = LayoutSize.Expand,
-                    crossAxisAlignment = CrossAxisAlignment.Center,
-                    modifier = Spacing(16.dp)
+                    modifier = ExpandedWidth,
+                    arrangement = Arrangement.Center
                 ) {
                     Card(
-                        shape = RoundedCornerShape(8.dp),
                         elevation = 4.dp,
-                        color = +themeColor { error }) {
+                        color = (+MaterialTheme.colors()).error
+                    ) {
                         Padding(16.dp) {
                             Column(
-                                crossAxisAlignment = CrossAxisAlignment.Center
+                                arrangement = Arrangement.Center
                             ) {
                                 Text(text = model.error!!)
                                 HeightSpacer(height = 8.dp)
-                                Button(text = "Erneut versuchen", onClick =  { model.fetchSchedule() })
+                                Button(
+                                    text = "Erneut versuchen",
+                                    onClick = { model.fetchSchedule() })
                             }
                         }
                     }
@@ -129,15 +128,15 @@ fun HomeScreen() {
                 val weekdaysAsList = weekdays.toList()
 
                 // Select weekday
-                if (selectedTabIndex.value == -1) {
-                    val c = Calendar.getInstance()
+                val c = Calendar.getInstance()
+                if (!model.initialSelectionDone && model.schedule.size > 0) {
                     selectedTabIndex.value =
                         weekdaysAsList.indexOfFirst { it.first == c.get(Calendar.DAY_OF_WEEK) }
+                    model.initialSelectionDone = true
                 }
 
                 val weekdayFromSelectedIndex = weekdaysAsList[selectedTabIndex.value].first
 
-                val c = Calendar.getInstance()
                 val weekdayItems = model.schedule.filter {
                     c.time = DateTimeUtils.toDate(it.startDate)
                     c.get(Calendar.DAY_OF_WEEK) == weekdayFromSelectedIndex
@@ -147,14 +146,11 @@ fun HomeScreen() {
                     WeekdayColumn(weekdayItems)
                 } else {
                     Column(
-                        crossAxisSize = LayoutSize.Expand,
-                        crossAxisAlignment = CrossAxisAlignment.Stretch,
-                        modifier = Spacing(16.dp)
+                        modifier = ExpandedWidth
                     ) {
                         Card(
-                            shape = RoundedCornerShape(8.dp),
-                            elevation = 4.dp,
-                            color = +themeColor { primaryVariant }) {
+                            color = (+MaterialTheme.colors()).primaryVariant
+                        ) {
                             Padding(16.dp) {
                                 if (model.schedule.isNullOrEmpty() && c.get(Calendar.DAY_OF_WEEK) == 2) {
                                     Text(text = "Der aktuelle Sendeplan wurde noch nicht veröffentlicht.")
@@ -176,13 +172,11 @@ fun WeekdayColumn(weekdayItems: List<BonjwaScheduleItem>) {
 
     VerticalScroller {
         Column(
-            crossAxisSize = LayoutSize.Expand,
-            crossAxisAlignment = CrossAxisAlignment.Stretch,
-            modifier = Spacing(16.dp)
+            modifier = ExpandedWidth
         ) {
             for (item in weekdayItems) {
                 ScheduleItemCard(item)
-                HeightSpacer(height = 16.dp)
+                Divider()
             }
         }
     }
@@ -198,22 +192,19 @@ fun ScheduleItemCard(item: BonjwaScheduleItem) {
     val isRunning = item.startDate.isBefore(now) && item.endDate.isAfter(now)
 
     Card(
-        shape = RoundedCornerShape(8.dp),
-        elevation = 4.dp,
         color = when {
-            item.cancelled -> +themeColor { error }
-            isRunning -> +themeColor { secondary }
-            else -> +themeColor { primaryVariant }
-        }) {
+            item.cancelled -> (+MaterialTheme.colors()).error
+            isRunning -> (+MaterialTheme.colors()).secondaryVariant
+            else -> (+MaterialTheme.colors()).primaryVariant
+        }
+    ) {
         Ripple(bounded = true) {
             Padding(16.dp) {
                 FlexRow(crossAxisAlignment = CrossAxisAlignment.Start) {
                     inflexible {
                         Column(
-                            mainAxisAlignment = MainAxisAlignment.Center,
-                            mainAxisSize = LayoutSize.Expand,
-                            crossAxisAlignment = CrossAxisAlignment.Center,
-                            crossAxisSize = LayoutSize.Expand
+                            modifier = Expanded,
+                            arrangement = Arrangement.Center
                         ) {
                             Text(
                                 text = item
@@ -221,35 +212,42 @@ fun ScheduleItemCard(item: BonjwaScheduleItem) {
                                     .atZone(ZoneOffset.systemDefault())
                                     .toLocalTime()
                                     .toString(),
-                                style = +themeTextStyle { subtitle2 })
-                            Text(text = "—", style = +themeTextStyle { subtitle2 })
+                                style = (+MaterialTheme.typography()).subtitle2
+                            )
+                            Text(text = "—", style = (+MaterialTheme.typography()).subtitle2)
                             Text(
                                 text = item
                                     .endDate
                                     .atZone(ZoneOffset.systemDefault())
                                     .toLocalTime()
                                     .toString(),
-                                style = +themeTextStyle { subtitle2 })
+                                style = (+MaterialTheme.typography()).subtitle2
+                            )
                         }
                         WidthSpacer(width = 16.dp)
                     }
                     expanded(1f) {
 
                         Column {
-                            Text(text = item.title, style = +themeTextStyle { h6 })
-                            Text(text = item.caster, style = +themeTextStyle { subtitle1 })
+                            Text(text = item.title, style = (+MaterialTheme.typography()).h6)
+                            Text(
+                                text = item.caster,
+                                style = (+MaterialTheme.typography()).subtitle1
+                            )
                         }
                     }
+
                     inflexible {
                         if (isRunning) {
                             WidthSpacer(width = 16.dp)
                             Column(
-                                mainAxisAlignment = MainAxisAlignment.Center,
-                                mainAxisSize = LayoutSize.Expand,
-                                crossAxisAlignment = CrossAxisAlignment.Center,
-                                crossAxisSize = LayoutSize.Expand
+                                modifier = Expanded,
+                                arrangement = Arrangement.Center
                             ) {
-                                Button(text = "Anschauen", onClick = {
+                                Button(
+                                    text = "Anschauen",
+                                    style = ContainedButtonStyle(color = (+MaterialTheme.colors()).secondary),
+                                    onClick = {
                                     val intent = Intent(Intent.ACTION_VIEW)
                                     intent.data = Uri.parse("https://twitch.tv/bonjwa")
                                     context.startActivity(intent)
@@ -263,48 +261,23 @@ fun ScheduleItemCard(item: BonjwaScheduleItem) {
     }
 }
 
-
 @Composable
-fun <T>TabChipRow(items: List<T>, selectedIndex: State<Int>, onClick: (selectedIndex: Int) -> Unit) {
+fun <T> TabChipRow(
+    items: List<T>,
+    selectedIndex: State<Int>,
+    onClick: (selectedIndex: Int) -> Unit
+) {
     TabRow(
         items = weekdays.toList(),
         selectedIndex = selectedIndex.value,
-        scrollable = true,
-        indicatorContainer = @Composable {}
+        scrollable = true
     ) { index, text ->
-        Padding(8.dp) {
-            TabChip(
-                text = text.second,
-                selected = selectedIndex.value == index,
-                onClick = {
-                    selectedIndex.value = index
-                    onClick(index)
-                }
-            )
+        Tab(
+            text = text.second,
+            selected = selectedIndex.value == index
+        ) {
+            selectedIndex.value = index
+            onClick(index)
         }
-    }
-}
-
-@Composable
-fun TabChip(text: String, selected: Boolean, onClick: () -> Unit = {}) {
-    Card(
-        shape = RoundedCornerShape(50),
-        elevation = 4.dp,
-        color = if (selected) (+themeColor { secondary }) else +themeColor { primaryVariant }) {
-        Ripple(bounded = true) {
-            Clickable(onClick = onClick) {
-                Column {
-                    Padding(
-                        left = 24.dp,
-                        top = 8.dp,
-                        right = 24.dp,
-                        bottom = 8.dp
-                    ) {
-                        Text(text = text)
-                    }
-                }
-            }
-        }
-
     }
 }

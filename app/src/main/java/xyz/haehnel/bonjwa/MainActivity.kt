@@ -13,10 +13,8 @@ class MainActivity : AppCompatActivity() {
 
         AndroidThreeTen.init(this)
 
-        val currentNightMode = applicationContext.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-
         setContent {
-            BonjwaApp(currentNightMode == Configuration.UI_MODE_NIGHT_YES)
+            BonjwaApp()
         }
     }
 }
