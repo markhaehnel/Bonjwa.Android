@@ -6,7 +6,6 @@ import androidx.compose.unaryPlus
 import androidx.ui.core.Modifier
 import androidx.ui.core.Text
 import androidx.ui.core.dp
-import androidx.ui.graphics.Color
 import androidx.ui.layout.*
 import androidx.ui.material.Button
 import androidx.ui.material.Divider
@@ -20,17 +19,19 @@ fun AppDrawer(
     bodyContent: @Composable() () -> Unit,
     footerContent: @Composable() (() -> Unit)? = null
 ) {
+    val dividerColor = (+MaterialTheme.colors()).onPrimary.copy(alpha = 0.05f)
+
     Column(modifier = Expanded, arrangement = Arrangement.Begin) {
         HeightSpacer(24.dp)
         if (headerContent != null) {
             headerContent()
-            Divider(color = Color(0x14CCCCCC))
+            Divider(color = dividerColor)
         }
 
         bodyContent()
 
         if (footerContent != null) {
-            Divider(color = Color(0x14CCCCCC))
+            Divider(color = dividerColor)
             footerContent()
         }
     }

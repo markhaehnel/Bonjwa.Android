@@ -163,9 +163,9 @@ fun HomeScreen(openDrawer: () -> Unit) {
                         ) {
                             Padding(16.dp) {
                                 if (model.schedule.isNullOrEmpty() && c.get(Calendar.DAY_OF_WEEK) == 2) {
-                                    Text(text = "Der aktuelle Sendeplan wurde noch nicht veröffentlicht.")
+                                    Text(+stringResource(R.string.schedule_not_published))
                                 } else {
-                                    Text(text = "Nicht auf Sendung.")
+                                    Text(+stringResource(R.string.schedule_not_live))
                                 }
                             }
                         }

@@ -3,4 +3,6 @@
     <string name="app_description">Die inoffizielle Community App</string>
     <string name="schedule">Sendeplan</string>
     <string name="settings">Einstellungen</string>
+    <string name="schedule_not_published">Der aktuelle Sendeplan wurde noch nicht veröffentlicht.</string>
+    <string name="schedule_not_live">Nicht auf Sendung.</string>
 </resources>
