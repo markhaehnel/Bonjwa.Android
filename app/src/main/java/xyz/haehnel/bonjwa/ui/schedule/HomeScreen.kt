@@ -102,7 +102,7 @@ fun ScheduleScreen(openDrawer: () -> Unit) {
             }
         }
         flexible(1f) {
-            TabChipRow(weekdays.values.toList(), selectedTabIndex, onClick = { index ->
+            WeekdayTabs(weekdays.values.toList(), selectedTabIndex, onClick = { index ->
                 selectedTabIndex.value = index
             })
             if (model.isLoading) {
@@ -272,7 +272,7 @@ fun ScheduleItemCard(item: BonjwaScheduleItem) {
 }
 
 @Composable
-fun TabChipRow(
+fun WeekdayTabs(
     items: List<String>,
     selectedIndex: State<Int>,
     onClick: (selectedIndex: Int) -> Unit
