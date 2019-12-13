@@ -11,9 +11,9 @@ import xyz.haehnel.bonjwa.ui.navigateTo
 fun SettingsScreen(openDrawer: () -> Unit) {
     Column {
         Text(text = "Settings")
-        Button(text = "Navigate to Home", onClick = {
+        Button(text = "Navigate to Schedule", onClick = {
             navigateTo(
-                Screen.Home
+                Screen.Schedule
             )
         })
     }

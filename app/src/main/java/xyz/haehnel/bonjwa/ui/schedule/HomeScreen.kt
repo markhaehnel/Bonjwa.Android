@@ -1,4 +1,4 @@
-package xyz.haehnel.bonjwa.ui.home
+package xyz.haehnel.bonjwa.ui.schedule
 
 import android.content.Intent
 import android.net.Uri
@@ -70,7 +70,7 @@ class ScheduleModel(
 data class ActionItem(@DrawableRes val vectorResource: Int, val action: () -> Unit)
 
 @Composable
-fun HomeScreen(openDrawer: () -> Unit) {
+fun ScheduleScreen(openDrawer: () -> Unit) {
     val selectedTabIndex = +state { 0 }
     val model = +memo { ScheduleModel() }
 
@@ -102,7 +102,7 @@ fun HomeScreen(openDrawer: () -> Unit) {
             }
         }
         flexible(1f) {
-            TabChipRow(weekdays.toList(), selectedTabIndex, onClick = { index ->
+            TabChipRow(weekdays.values.toList(), selectedTabIndex, onClick = { index ->
                 selectedTabIndex.value = index
             })
             if (model.isLoading) {
@@ -272,18 +272,18 @@ fun ScheduleItemCard(item: BonjwaScheduleItem) {
 }
 
 @Composable
-fun <T> TabChipRow(
-    items: List<T>,
+fun TabChipRow(
+    items: List<String>,
     selectedIndex: State<Int>,
     onClick: (selectedIndex: Int) -> Unit
 ) {
     TabRow(
-        items = weekdays.toList(),
+        items = items,
         selectedIndex = selectedIndex.value,
         scrollable = true
     ) { index, text ->
         Tab(
-            text = text.second,
+            text = text,
             selected = selectedIndex.value == index
         ) {
             selectedIndex.value = index

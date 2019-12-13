@@ -17,7 +17,7 @@ import androidx.ui.material.surface.Surface
 import androidx.ui.res.stringResource
 import xyz.haehnel.bonjwa.BuildConfig
 import xyz.haehnel.bonjwa.R
-import xyz.haehnel.bonjwa.ui.home.HomeScreen
+import xyz.haehnel.bonjwa.ui.schedule.ScheduleScreen
 import xyz.haehnel.bonjwa.ui.settings.SettingsScreen
 
 @Composable
@@ -43,7 +43,7 @@ private fun AppContent(openDrawer: () -> Unit) {
     Crossfade(BonjwaStatus.currentScreen) { screen ->
         Surface(color = (+MaterialTheme.colors()).background) {
             when (screen) {
-                is Screen.Home -> HomeScreen { openDrawer() }
+                is Screen.Schedule -> ScheduleScreen { openDrawer() }
                 is Screen.Settings -> SettingsScreen { openDrawer() }
             }
         }
@@ -80,9 +80,9 @@ private fun BonjwaAppDrawer(
             DrawerButton(
                 icon = R.drawable.ic_calendar,
                 label = +stringResource(R.string.schedule),
-                isSelected = currentScreen == Screen.Home
+                isSelected = currentScreen == Screen.Schedule
             ) {
-                navigateTo(Screen.Home)
+                navigateTo(Screen.Schedule)
                 closeDrawer()
             }
             DrawerButton(

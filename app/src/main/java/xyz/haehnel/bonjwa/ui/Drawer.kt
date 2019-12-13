@@ -21,7 +21,10 @@ fun AppDrawer(
 ) {
     val dividerColor = (+MaterialTheme.colors()).onPrimary.copy(alpha = 0.05f)
 
-    Column(modifier = Expanded, arrangement = Arrangement.Begin) {
+    Column(
+        modifier = Expanded,
+        arrangement = Arrangement.Begin
+    ) {
         HeightSpacer(24.dp)
         if (headerContent != null) {
             headerContent()
