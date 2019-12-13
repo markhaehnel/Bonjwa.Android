@@ -8,10 +8,10 @@ sealed class Screen {
 }
 
 @Model
-object BonjwaAppStatus {
+object BonjwaStatus {
 var currentScreen: Screen = Screen.Home
 }
 
 fun navigateTo(destination: Screen) {
-    BonjwaAppStatus.currentScreen = destination
+    BonjwaStatus.currentScreen = destination
 }

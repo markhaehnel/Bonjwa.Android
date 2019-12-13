@@ -4,18 +4,15 @@ import android.content.Intent
 import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.compose.*
-import androidx.ui.animation.Crossfade
 import androidx.ui.core.ContextAmbient
 import androidx.ui.core.Text
 import androidx.ui.core.dp
-import androidx.ui.foundation.Clickable
 import androidx.ui.foundation.VerticalScroller
-import androidx.ui.graphics.Image
 import androidx.ui.layout.*
 import androidx.ui.material.*
 import androidx.ui.material.ripple.Ripple
 import androidx.ui.material.surface.Card
-import androidx.ui.res.imageResource
+import androidx.ui.res.stringResource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,11 +23,7 @@ import org.threeten.bp.ZoneOffset
 import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.api.BonjwaScheduleItem
 import xyz.haehnel.bonjwa.repo.ScheduleRepository
-import xyz.haehnel.bonjwa.ui.BonjwaAppStatus
-import xyz.haehnel.bonjwa.ui.Screen
 import xyz.haehnel.bonjwa.ui.TopAppBarVectorButton
-import xyz.haehnel.bonjwa.ui.navigateTo
-import java.lang.Exception
 import java.util.*
 
 val weekdays =
@@ -77,14 +70,12 @@ class ScheduleModel(
 data class ActionItem(@DrawableRes val vectorResource: Int, val action: () -> Unit)
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(openDrawer: () -> Unit) {
     val selectedTabIndex = +state { 0 }
     val model = +memo { ScheduleModel() }
 
     val actionData = listOf(
-        ActionItem(R.drawable.ic_refresh) { model.fetchSchedule() },
-        ActionItem(R.drawable.ic_settings) { navigateTo(Screen.Settings) }
-
+        ActionItem(R.drawable.ic_refresh) { model.fetchSchedule() }
     )
 
     +onActive {
@@ -94,10 +85,14 @@ fun HomeScreen() {
     FlexColumn {
         inflexible {
             TopAppBar(
-                title = { Text("Bonjwa Sendeplan") },
+                title = {
+                    Text(
+                        "${+stringResource(R.string.app_name)} ${+stringResource(R.string.schedule)}"
+                    )
+                },
                 actionData = actionData,
                 navigationIcon = {
-                    TopAppBarVectorButton(id = R.drawable.ic_hamburger , onClick = {})
+                    TopAppBarVectorButton(id = R.drawable.ic_hamburger, onClick = openDrawer)
                 }
             ) { actionItem ->
                 TopAppBarVectorButton(
@@ -263,10 +258,10 @@ fun ScheduleItemCard(item: BonjwaScheduleItem) {
                                     text = "Anschauen",
                                     style = ContainedButtonStyle(color = (+MaterialTheme.colors()).secondary),
                                     onClick = {
-                                    val intent = Intent(Intent.ACTION_VIEW)
-                                    intent.data = Uri.parse("https://twitch.tv/bonjwa")
-                                    context.startActivity(intent)
-                                })
+                                        val intent = Intent(Intent.ACTION_VIEW)
+                                        intent.data = Uri.parse("https://twitch.tv/bonjwa")
+                                        context.startActivity(intent)
+                                    })
                             }
                         }
                     }

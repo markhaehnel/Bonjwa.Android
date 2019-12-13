@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Bonjwa</string>
+    <string name="schedule">Sendeplan</string>
+    <string name="settings">Einstellungen</string>
 </resources>
