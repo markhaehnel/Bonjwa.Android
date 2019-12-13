@@ -87,8 +87,6 @@ fun HomeScreen() {
 
     )
 
-    val navigationImage = +imageResource(R.drawable.ic_logo)
-
     +onActive {
         model.fetchSchedule()
     }
@@ -99,12 +97,13 @@ fun HomeScreen() {
                 title = { Text("Bonjwa Sendeplan") },
                 actionData = actionData,
                 navigationIcon = {
-                    AppBarIcon(
-                        icon = navigationImage,
-                        onClick = {})
+                    TopAppBarVectorButton(id = R.drawable.ic_hamburger , onClick = {})
                 }
             ) { actionItem ->
-                TopAppBarVectorButton(id = actionItem.vectorResource , onClick = { actionItem.action() })
+                TopAppBarVectorButton(
+                    id = actionItem.vectorResource,
+                    onClick = { actionItem.action() }
+                )
             }
         }
         flexible(1f) {
