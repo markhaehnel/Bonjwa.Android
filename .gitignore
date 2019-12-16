@@ -11,3 +11,4 @@ google-services.json
 *.jks
 /app/release
 /app/build
+/*.json
