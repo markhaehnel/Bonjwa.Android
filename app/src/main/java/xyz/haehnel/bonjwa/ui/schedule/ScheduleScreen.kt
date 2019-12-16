@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.compose.*
 import androidx.ui.core.ContextAmbient
+import androidx.ui.core.TestTag
 import androidx.ui.core.Text
 import androidx.ui.core.dp
 import androidx.ui.foundation.VerticalScroller
@@ -95,10 +96,12 @@ fun ScheduleScreen(openDrawer: () -> Unit) {
                     TopAppBarVectorButton(id = R.drawable.ic_hamburger, onClick = openDrawer)
                 }
             ) { actionItem ->
-                TopAppBarVectorButton(
-                    id = actionItem.vectorResource,
-                    onClick = { actionItem.action() }
-                )
+                TestTag(tag = "REFRESH_ACTION") {
+                    TopAppBarVectorButton(
+                        id = actionItem.vectorResource,
+                        onClick = { actionItem.action() }
+                    )
+                }
             }
         }
         flexible(1f) {
