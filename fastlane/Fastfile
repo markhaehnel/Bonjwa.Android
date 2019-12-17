@@ -16,12 +16,22 @@
 default_platform(:android)
 
 platform :android do
-  desc "Runs all the tests"
-  lane :test do
+  desc "Build app in debug and release"
+  lane :assemble do
+    gradle(task: "assemble")
+  end
+
+  desc "Run unit tests"
+  lane :unit_test do
     gradle(task: "test")
   end
 
-  desc "Deploy a new version to the Google Play internal track"
+  desc "Run instrumentation tests"
+  lane :instrumentation_test do
+    gradle(task: "connectedCheck")
+  end
+
+  desc "Build & deploy release to Google Play internal track"
   lane :deploy do
     gradle(task: "clean assembleRelease")
     upload_to_play_store(track: 'internal')

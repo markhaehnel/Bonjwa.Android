@@ -10,19 +10,24 @@ jobs:
   ci:
     name: Build + Test
     runs-on: macOS-latest
+
     strategy:
       matrix:
         api-level: [21, 29]
+
     steps:
     - uses: actions/checkout@v2
+
     - name: Build project
-      run: ./gradlew assemble --stacktrace
+      run: fastlane assemble
+
     - name: Run unit tests
-      run: ./gradlew test --stacktrace
+      run: fastlane unit_test
+
     - name: Run instrumentation tests
       uses: reactivecircus/android-emulator-runner@v2
       with:
         api-level: ${{ matrix.api-level }}
         arch: x86
         disable-animations: true
-        script: ./gradlew connectedCheck --stacktrace
+        script: fastlane instrumentation_test

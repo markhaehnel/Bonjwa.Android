@@ -16,16 +16,26 @@ or alternatively using `brew cask install fastlane`
 
 # Available Actions
 ## Android
-### android test
+### android assemble
 ```
-fastlane android test
+fastlane android assemble
 ```
-Runs all the tests
+Build app in debug and release
+### android unit_test
+```
+fastlane android unit_test
+```
+Run unit tests
+### android instrumentation_test
+```
+fastlane android instrumentation_test
+```
+Run instrumentation tests
 ### android deploy
 ```
 fastlane android deploy
 ```
-Deploy a new version to the Google Play internal track
+Build & deploy release to Google Play internal track
 
 ----
 
