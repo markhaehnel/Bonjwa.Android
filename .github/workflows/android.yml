@@ -24,10 +24,10 @@ jobs:
     - name: Run unit tests
       run: fastlane unit_test
 
-    - name: Run instrumentation tests
-      uses: reactivecircus/android-emulator-runner@v2
-      with:
-        api-level: ${{ matrix.api-level }}
-        arch: x86
-        disable-animations: true
-        script: fastlane instrumentation_test
+    # - name: Run instrumentation tests
+    #   uses: reactivecircus/android-emulator-runner@v2
+    #   with:
+    #     api-level: ${{ matrix.api-level }}
+    #     arch: x86
+    #     disable-animations: true
+    #     script: fastlane instrumentation_test
