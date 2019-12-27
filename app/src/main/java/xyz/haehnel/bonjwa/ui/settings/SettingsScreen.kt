@@ -43,7 +43,7 @@ fun SettingsScreen(openDrawer: () -> Unit) {
         flexible(1f) {
             VerticalScroller {
                 Column {
-                    ListItem("Farbschema")
+                    ListItem(+stringResource(R.string.settings_colorScheme))
                     val appThemeOptions = listOf(
                         +stringResource(R.string.settings_colorScheme_dark),
                         +stringResource(R.string.settings_colorScheme_light)
