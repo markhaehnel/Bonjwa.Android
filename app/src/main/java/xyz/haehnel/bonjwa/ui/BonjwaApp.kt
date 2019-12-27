@@ -22,7 +22,7 @@ import xyz.haehnel.bonjwa.ui.settings.SettingsScreen
 
 @Composable
 fun BonjwaApp() {
-    MaterialTheme(colors = appTheme) {
+    MaterialTheme(colors = BonjwaStatus.appTheme) {
         val (drawerState, onDrawerStateChange) = +state { DrawerState.Closed }
         ModalDrawerLayout(
             drawerState = drawerState,

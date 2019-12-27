@@ -9,8 +9,8 @@ import kotlinx.coroutines.Deferred
 import org.threeten.bp.Instant
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import xyz.haehnel.bonjwa.api.BonjwaScheduleItem
 import xyz.haehnel.bonjwa.api.BonjwaService
+import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
 
 class ScheduleRepository {
     fun getSchedule(): Deferred<List<BonjwaScheduleItem>> {

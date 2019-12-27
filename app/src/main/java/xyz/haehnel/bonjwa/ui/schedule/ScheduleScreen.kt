@@ -22,7 +22,7 @@ import org.threeten.bp.DateTimeUtils
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneOffset
 import xyz.haehnel.bonjwa.R
-import xyz.haehnel.bonjwa.api.BonjwaScheduleItem
+import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
 import xyz.haehnel.bonjwa.repo.ScheduleRepository
 import xyz.haehnel.bonjwa.ui.TopAppBarVectorButton
 import java.util.*
