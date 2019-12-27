@@ -104,10 +104,13 @@ fun ScheduleScreen(openDrawer: () -> Unit) {
                 }
             }
         }
-        flexible(1f) {
+        inflexible {
             WeekdayTabs(weekdays.values.toList(), selectedTabIndex, onClick = { index ->
                 selectedTabIndex.value = index
             })
+        }
+        expanded(1f) {
+
             if (model.isLoading) {
                 Row(
                     modifier = ExpandedWidth,
