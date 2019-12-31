@@ -30,7 +30,7 @@ fun BonjwaStatus.resetState() {
 }
 
 /**
- * Helper method that can be used to test Jetnews UI Composables in isolation
+ * Helper method that can be used to test UI Composables in isolation
  */
 fun ComposeTestRule.setMaterialContent(children: @Composable() () -> Unit) {
     setContent {

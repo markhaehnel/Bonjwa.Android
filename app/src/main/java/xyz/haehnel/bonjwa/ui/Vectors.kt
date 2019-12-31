@@ -24,7 +24,11 @@ fun TopAppBarVectorButton(@DrawableRes id: Int, onClick: () -> Unit) {
 }
 
 @Composable
-fun VectorImage(modifier: Modifier = Modifier.None, @DrawableRes id: Int, tint: Color = Color.Transparent) {
+fun VectorImage(
+    modifier: Modifier = Modifier.None,
+    @DrawableRes id: Int,
+    tint: Color = Color.Transparent
+) {
     val vector = +vectorResource(id)
     WithDensity {
         Container(

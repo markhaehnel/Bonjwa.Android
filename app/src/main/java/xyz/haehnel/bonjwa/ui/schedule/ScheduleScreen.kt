@@ -14,6 +14,7 @@ import androidx.ui.material.*
 import androidx.ui.material.ripple.Ripple
 import androidx.ui.material.surface.Card
 import androidx.ui.res.stringResource
+import java.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,7 +26,6 @@ import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
 import xyz.haehnel.bonjwa.repo.ScheduleRepository
 import xyz.haehnel.bonjwa.ui.TopAppBarVectorButton
-import java.util.*
 
 val weekdays =
     mapOf(
@@ -63,7 +63,6 @@ class ScheduleModel(
                     isLoading = false
                 }
             }
-
         }
     }
 }
@@ -184,7 +183,7 @@ fun ScheduleScreen(openDrawer: () -> Unit) {
 
 @Composable
 fun WeekdayColumn(weekdayItems: List<BonjwaScheduleItem>) {
-    //TODO: extract composable with it's children to separate file
+    // TODO: extract composable with it's children to separate file
 
     VerticalScroller {
         Column(
@@ -200,7 +199,7 @@ fun WeekdayColumn(weekdayItems: List<BonjwaScheduleItem>) {
 
 @Composable
 fun ScheduleItemCard(item: BonjwaScheduleItem) {
-    //TODO: implement cancelled state
+    // TODO: implement cancelled state
 
     val context = +ambient(ContextAmbient)
 

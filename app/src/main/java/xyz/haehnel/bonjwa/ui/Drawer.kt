@@ -15,9 +15,9 @@ import androidx.ui.material.surface.Surface
 
 @Composable
 fun AppDrawer(
-    headerContent: @Composable() (() -> Unit)? = null,
+    headerContent: @Composable (() -> Unit)? = null,
     bodyContent: @Composable() () -> Unit,
-    footerContent: @Composable() (() -> Unit)? = null
+    footerContent: @Composable (() -> Unit)? = null
 ) {
     val dividerColor = (+MaterialTheme.colors()).onPrimary.copy(alpha = 0.05f)
 
@@ -65,7 +65,7 @@ fun DrawerButton(
         color = backgroundColor
     ) {
         Button(onClick = action, style = TextButtonStyle(), modifier = Spacing(left = 8.dp, top = 8.dp, right = 8.dp, bottom = 8.dp)) {
-            Row (ExpandedWidth, arrangement = Arrangement.Begin) {
+            Row(ExpandedWidth, arrangement = Arrangement.Begin) {
                 VectorImage(
                     modifier = Gravity.Center,
                     id = icon,
@@ -97,7 +97,7 @@ fun DrawerInfo(
         modifier = modifier
     ) {
         Button(onClick = action, style = TextButtonStyle(), modifier = Spacing(left = 8.dp, top = 4.dp, right = 8.dp, bottom = 4.dp)) {
-            Row (ExpandedWidth, arrangement = Arrangement.Begin) {
+            Row(ExpandedWidth, arrangement = Arrangement.Begin) {
                 if (icon != null) {
                     VectorImage(
                         modifier = Gravity.Center,
