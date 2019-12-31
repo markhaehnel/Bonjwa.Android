@@ -25,7 +25,7 @@ class ScheduleRepository {
 
         val api = retrofit.create(BonjwaService::class.java)
 
-        return api.getSchedule() //TODO: Wait for compose bugfix (https://issuetracker.google.com/issues/143468771)
+        return api.getSchedule() // TODO: Wait for compose bugfix (https://issuetracker.google.com/issues/143468771)
     }
 }
 

@@ -8,4 +8,3 @@ interface BonjwaService {
     @GET("schedule")
     fun getSchedule(): Deferred<List<BonjwaScheduleItem>>
 }
-

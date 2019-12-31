@@ -11,7 +11,6 @@ import xyz.haehnel.bonjwa.ui.BonjwaApp
 import xyz.haehnel.bonjwa.ui.BonjwaStatus
 import xyz.haehnel.bonjwa.ui.themeList
 
-
 class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private lateinit var sharedPrefs: SharedPreferences
@@ -22,7 +21,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         AndroidThreeTen.init(this)
 
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
-
 
         setContent {
             BonjwaApp()
@@ -46,7 +44,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         }
     }
 
-    fun applySettings(prefs: SharedPreferences) {
+    private fun applySettings(prefs: SharedPreferences) {
         BonjwaStatus.appTheme = themeList[prefs.getInt(SETTINGS.APP_THEME, 0)]
     }
 }
