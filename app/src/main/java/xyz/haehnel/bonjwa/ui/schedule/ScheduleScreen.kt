@@ -169,7 +169,8 @@ fun ScheduleScreen(openDrawer: () -> Unit) {
                         modifier = ExpandedWidth
                     ) {
                         Card(
-                            color = (+MaterialTheme.colors()).primaryVariant
+                            color = (+MaterialTheme.colors()).primaryVariant,
+                            modifier = ExpandedWidth
                         ) {
                             Padding(16.dp) {
                                 if (model.schedule.isNullOrEmpty() && c.get(Calendar.DAY_OF_WEEK) == 2) {
