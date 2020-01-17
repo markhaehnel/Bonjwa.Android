@@ -1,33 +1,27 @@
 package xyz.haehnel.bonjwa.ui.schedule
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.*
-import androidx.ui.core.ContextAmbient
 import androidx.ui.core.TestTag
 import androidx.ui.core.Text
 import androidx.ui.core.dp
-import androidx.ui.foundation.VerticalScroller
 import androidx.ui.layout.*
-import androidx.ui.material.*
-import androidx.ui.material.ripple.Ripple
+import androidx.ui.material.Button
+import androidx.ui.material.CircularProgressIndicator
+import androidx.ui.material.MaterialTheme
+import androidx.ui.material.TopAppBar
 import androidx.ui.material.surface.Card
 import androidx.ui.res.stringResource
-import androidx.ui.text.ParagraphStyle
-import androidx.ui.text.style.TextAlign
-import java.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.threeten.bp.DateTimeUtils
-import org.threeten.bp.Instant
-import org.threeten.bp.ZoneOffset
 import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
 import xyz.haehnel.bonjwa.repo.ScheduleRepository
 import xyz.haehnel.bonjwa.ui.TopAppBarVectorButton
 import xyz.haehnel.bonjwa.ui.common.ActionBarItem
+import java.util.*
 
 val weekdays =
     mapOf(
@@ -109,7 +103,7 @@ fun ScheduleScreen(openDrawer: () -> Unit) {
             }
         }
         inflexible {
-            WeekdayTabs(weekdays.values.toList(), selectedTabIndex, onClick = { index ->
+            WeekdayTabRow(weekdays, selectedTabIndex, onClick = { index ->
                 selectedTabIndex.value = index
             })
         }
@@ -183,137 +177,6 @@ fun ScheduleScreen(openDrawer: () -> Unit) {
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun WeekdayColumn(weekdayItems: List<BonjwaScheduleItem>) {
-    // TODO: extract composable with it's children to separate file
-
-    VerticalScroller {
-        Column(
-            modifier = ExpandedWidth
-        ) {
-            for (item in weekdayItems) {
-                ScheduleItemCard(item = item)
-                Divider()
-            }
-        }
-    }
-}
-
-@Composable
-fun ScheduleItemCard(item: BonjwaScheduleItem) {
-    // TODO: implement cancelled state
-
-    val context = +ambient(ContextAmbient)
-
-    val now = Instant.now()
-    val isRunning = item.startDate.isBefore(now) && item.endDate.isAfter(now)
-
-    Card(
-        color = when {
-            item.cancelled -> (+MaterialTheme.colors()).error
-            isRunning -> (+MaterialTheme.colors()).secondaryVariant
-            else -> (+MaterialTheme.colors()).primaryVariant
-        }
-    ) {
-        Ripple(bounded = true) {
-            Padding(16.dp) {
-                FlexRow(crossAxisAlignment = CrossAxisAlignment.Start) {
-                    inflexible {
-                        Column(
-                            modifier = Spacing(right = 16.dp) wraps Width(40.dp)
-                        ) {
-                            Text(
-                                text = item
-                                    .startDate
-                                    .atZone(ZoneOffset.systemDefault())
-                                    .toLocalTime()
-                                    .toString(),
-                                style = (+MaterialTheme.typography()).subtitle2,
-                                paragraphStyle = ParagraphStyle(textAlign = TextAlign.Center),
-                                modifier = ExpandedWidth
-                            )
-                            Text(
-                                text = "—",
-                                style = (+MaterialTheme.typography()).subtitle2,
-                                paragraphStyle = ParagraphStyle(textAlign = TextAlign.Center),
-                                modifier = ExpandedWidth
-                            )
-                            Text(
-                                text = item
-                                    .endDate
-                                    .atZone(ZoneOffset.systemDefault())
-                                    .toLocalTime()
-                                    .toString(),
-                                style = (+MaterialTheme.typography()).subtitle2,
-                                paragraphStyle = ParagraphStyle(textAlign = TextAlign.Center),
-                                modifier = ExpandedWidth
-                            )
-                        }
-                    }
-                    expanded(1f) {
-
-                        Column {
-                            Text(text = item.title, style = (+MaterialTheme.typography()).h6)
-                            Text(
-                                text = item.caster,
-                                style = (+MaterialTheme.typography()).subtitle1
-                            )
-                        }
-                    }
-
-                    inflexible {
-                        if (isRunning) {
-                            WidthSpacer(width = 16.dp)
-                            Column(
-                                modifier = Expanded,
-                                arrangement = Arrangement.Center
-                            ) {
-                                Button(
-                                    text = "Anschauen",
-                                    style = ContainedButtonStyle(color = (+MaterialTheme.colors()).secondary),
-                                    onClick = {
-                                        val intent = Intent(Intent.ACTION_VIEW)
-                                        intent.data = Uri.parse("https://twitch.tv/bonjwa")
-                                        context.startActivity(intent)
-                                    })
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun WeekdayTabs(
-    items: List<String>,
-    selectedIndex: State<Int>,
-    onClick: (selectedIndex: Int) -> Unit
-) {
-
-    val c = Calendar.getInstance()
-
-    TabRow(
-        items = items,
-        selectedIndex = selectedIndex.value,
-        scrollable = true
-    ) { index, text ->
-
-        val todayIndex = weekdays.toList().indexOfFirst { it.first == c.get(Calendar.DAY_OF_WEEK) }
-
-        val weekdayText = if (todayIndex == index) "• $text" else text
-
-        Tab(
-            text = weekdayText,
-            selected = selectedIndex.value == index
-        ) {
-            selectedIndex.value = index
-            onClick(index)
         }
     }
 }

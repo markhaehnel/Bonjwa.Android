@@ -44,7 +44,7 @@ private fun AppContent(openDrawer: () -> Unit) {
         Surface(color = (+MaterialTheme.colors()).background) {
             when (screen) {
                 is Screen.Schedule -> ScheduleScreen { openDrawer() }
-                is Screen.Settings -> SettingsScreen { openDrawer() }
+                is Screen.Settings -> SettingsScreen()
             }
         }
     }

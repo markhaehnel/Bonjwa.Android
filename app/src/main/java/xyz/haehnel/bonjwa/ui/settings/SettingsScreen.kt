@@ -21,7 +21,7 @@ import xyz.haehnel.bonjwa.ui.TopAppBarVectorButton
 import xyz.haehnel.bonjwa.ui.navigateTo
 
 @Composable
-fun SettingsScreen(openDrawer: () -> Unit) {
+fun SettingsScreen() {
 
     val prefs = PreferenceManager.getDefaultSharedPreferences(+ambient(ContextAmbient))
 

@@ -8,4 +8,5 @@
     <string name="settings_colorScheme">Farbschema</string>
     <string name="settings_colorScheme_dark">Dunkel</string>
     <string name="settings_colorScheme_light">Hell</string>
+    <string name="schedule_watch">Anschauen</string>
 </resources>
