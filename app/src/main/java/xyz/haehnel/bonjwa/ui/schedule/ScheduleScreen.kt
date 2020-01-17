@@ -85,21 +85,21 @@ fun ScheduleScreen(openDrawer: () -> Unit) {
         inflexible {
             TopAppBar(
                 title = {
-                    Text(
-                        "${+stringResource(R.string.app_name)} ${+stringResource(R.string.schedule)}"
-                    )
+                    TestTag("APP_TITLE") {
+                        Text(
+                            "${+stringResource(R.string.app_name)} ${+stringResource(R.string.schedule)}"
+                        )
+                    }
                 },
                 actionData = actionData,
                 navigationIcon = {
                     TopAppBarVectorButton(id = R.drawable.ic_hamburger, onClick = openDrawer)
                 }
             ) { actionItem ->
-                TestTag(tag = "REFRESH_ACTION") {
-                    TopAppBarVectorButton(
-                        id = actionItem.vectorResource,
-                        onClick = { actionItem.action() }
-                    )
-                }
+                TopAppBarVectorButton(
+                    id = actionItem.vectorResource,
+                    onClick = { actionItem.action() }
+                )
             }
         }
         inflexible {
@@ -132,8 +132,9 @@ fun ScheduleScreen(openDrawer: () -> Unit) {
                                 Text(text = model.error!!)
                                 HeightSpacer(height = 8.dp)
                                 Button(
-                                    text = "Erneut versuchen",
-                                    onClick = { model.fetchSchedule() })
+                                    text = +stringResource(R.string.retry),
+                                    onClick = { model.fetchSchedule() }
+                                )
                             }
                         }
                     }

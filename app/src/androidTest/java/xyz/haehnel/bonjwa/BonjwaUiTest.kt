@@ -1,6 +1,8 @@
 package xyz.haehnel.bonjwa
 
-import androidx.ui.test.*
+import androidx.ui.test.assertIsVisible
+import androidx.ui.test.createComposeRule
+import androidx.ui.test.findByTag
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -20,10 +22,8 @@ class BonjwaUiTest {
 
     @Test
     fun app_launches() {
-        // findByText("Bonjwa Sendeplan").assertIsDisplayed()
-        findByTag("REFRESH_ACTION").apply {
+        findByTag("APP_TITLE").apply {
             assertIsVisible()
-            assertHasClickAction()
         }
     }
 }
