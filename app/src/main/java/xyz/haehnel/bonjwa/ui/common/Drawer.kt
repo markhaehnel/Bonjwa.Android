@@ -1,4 +1,4 @@
-package xyz.haehnel.bonjwa.ui
+package xyz.haehnel.bonjwa.ui.common
 
 import androidx.annotation.DrawableRes
 import androidx.compose.Composable
@@ -12,6 +12,7 @@ import androidx.ui.material.Divider
 import androidx.ui.material.MaterialTheme
 import androidx.ui.material.TextButtonStyle
 import androidx.ui.material.surface.Surface
+import xyz.haehnel.bonjwa.ui.VectorImage
 
 @Composable
 fun AppDrawer(

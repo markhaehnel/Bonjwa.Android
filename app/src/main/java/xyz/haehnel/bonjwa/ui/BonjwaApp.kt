@@ -17,6 +17,9 @@ import androidx.ui.material.surface.Surface
 import androidx.ui.res.stringResource
 import xyz.haehnel.bonjwa.BuildConfig
 import xyz.haehnel.bonjwa.R
+import xyz.haehnel.bonjwa.ui.common.AppDrawer
+import xyz.haehnel.bonjwa.ui.common.DrawerButton
+import xyz.haehnel.bonjwa.ui.common.DrawerInfo
 import xyz.haehnel.bonjwa.ui.schedule.ScheduleScreen
 import xyz.haehnel.bonjwa.ui.settings.SettingsScreen
 
@@ -102,7 +105,8 @@ private fun BonjwaAppDrawer(
                     ${BuildConfig.APPLICATION_ID}
                     ${BuildConfig.VERSION_NAME} (${BuildConfig.BUILD_TYPE})
                     """.trimIndent(),
-                icon = R.drawable.ic_info)
+                icon = R.drawable.ic_info
+            )
         }
     )
 }
