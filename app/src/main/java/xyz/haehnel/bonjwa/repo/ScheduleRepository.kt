@@ -10,6 +10,7 @@ import org.threeten.bp.Instant
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import xyz.haehnel.bonjwa.api.BonjwaService
+import xyz.haehnel.bonjwa.model.BonjwaEventItem
 import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
 
 class ScheduleRepository {
@@ -26,6 +27,21 @@ class ScheduleRepository {
         val api = retrofit.create(BonjwaService::class.java)
 
         return api.getSchedule() // TODO: Wait for compose bugfix (https://issuetracker.google.com/issues/143468771)
+    }
+
+    fun getEvents(): Deferred<List<BonjwaEventItem>> {
+
+        val moshi = Moshi.Builder().add(InstantAdapter()).add(KotlinJsonAdapterFactory()).build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://api.bonjwa.ezhub.de")
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
+            .build()
+
+        val api = retrofit.create(BonjwaService::class.java)
+
+        return api.getEvents() // TODO: Wait for compose bugfix (https://issuetracker.google.com/issues/143468771)
     }
 }
 

@@ -5,6 +5,7 @@ import androidx.ui.material.ColorPalette
 
 sealed class Screen {
     object Schedule : Screen()
+    object Events : Screen()
     object Settings : Screen()
 }
 

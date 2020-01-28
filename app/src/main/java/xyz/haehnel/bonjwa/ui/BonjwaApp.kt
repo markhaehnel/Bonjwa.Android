@@ -20,6 +20,7 @@ import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.ui.common.AppDrawer
 import xyz.haehnel.bonjwa.ui.common.DrawerButton
 import xyz.haehnel.bonjwa.ui.common.DrawerInfo
+import xyz.haehnel.bonjwa.ui.events.EventsScreen
 import xyz.haehnel.bonjwa.ui.schedule.ScheduleScreen
 import xyz.haehnel.bonjwa.ui.settings.SettingsScreen
 
@@ -47,6 +48,7 @@ private fun AppContent(openDrawer: () -> Unit) {
         Surface(color = (+MaterialTheme.colors()).background) {
             when (screen) {
                 is Screen.Schedule -> ScheduleScreen { openDrawer() }
+                is Screen.Events -> EventsScreen { openDrawer() }
                 is Screen.Settings -> SettingsScreen()
             }
         }
@@ -86,6 +88,14 @@ private fun BonjwaAppDrawer(
                 isSelected = currentScreen == Screen.Schedule
             ) {
                 navigateTo(Screen.Schedule)
+                closeDrawer()
+            }
+            DrawerButton(
+                icon = R.drawable.ic_calendar,
+                label = +stringResource(R.string.events),
+                isSelected = currentScreen == Screen.Events
+            ) {
+                navigateTo(Screen.Events)
                 closeDrawer()
             }
             DrawerButton(

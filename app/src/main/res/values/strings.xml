@@ -10,4 +10,6 @@
     <string name="settings_colorScheme_light">Hell</string>
     <string name="schedule_watch">Anschauen</string>
     <string name="retry">Erneut versuchen</string>
+    <string name="events">Events</string>
+    <string name="events_empty">Keine Events geplant.</string>
 </resources>
