@@ -1,20 +1,13 @@
 package xyz.haehnel.bonjwa.ui
 
 import androidx.compose.Composable
-import androidx.compose.state
-import androidx.compose.unaryPlus
 import androidx.ui.animation.Crossfade
 import androidx.ui.core.Text
-import androidx.ui.core.dp
-import androidx.ui.layout.Column
-import androidx.ui.layout.Row
-import androidx.ui.layout.Spacing
-import androidx.ui.layout.WidthSpacer
-import androidx.ui.material.DrawerState
+import androidx.ui.layout.*
 import androidx.ui.material.MaterialTheme
-import androidx.ui.material.ModalDrawerLayout
 import androidx.ui.material.surface.Surface
 import androidx.ui.res.stringResource
+import androidx.ui.unit.dp
 import xyz.haehnel.bonjwa.BuildConfig
 import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.ui.common.AppDrawer
@@ -27,28 +20,17 @@ import xyz.haehnel.bonjwa.ui.settings.SettingsScreen
 @Composable
 fun BonjwaApp() {
     MaterialTheme(colors = BonjwaStatus.appTheme) {
-        val (drawerState, onDrawerStateChange) = +state { DrawerState.Closed }
-        ModalDrawerLayout(
-            drawerState = drawerState,
-            onStateChange = onDrawerStateChange,
-            drawerContent = {
-                BonjwaAppDrawer(
-                    currentScreen = BonjwaStatus.currentScreen,
-                    closeDrawer = { onDrawerStateChange(DrawerState.Closed) }
-                )
-            },
-            bodyContent = { AppContent { onDrawerStateChange(DrawerState.Opened) } }
-        )
+        AppContent()
     }
 }
 
 @Composable
-private fun AppContent(openDrawer: () -> Unit) {
+private fun AppContent() {
     Crossfade(BonjwaStatus.currentScreen) { screen ->
-        Surface(color = (+MaterialTheme.colors()).background) {
+        Surface(color = (MaterialTheme.colors()).background) {
             when (screen) {
-                is Screen.Schedule -> ScheduleScreen { openDrawer() }
-                is Screen.Events -> EventsScreen { openDrawer() }
+                is Screen.Schedule -> ScheduleScreen()
+                is Screen.Events -> EventsScreen()
                 is Screen.Settings -> SettingsScreen()
             }
         }
@@ -56,24 +38,24 @@ private fun AppContent(openDrawer: () -> Unit) {
 }
 
 @Composable
-private fun BonjwaAppDrawer(
+fun BonjwaAppDrawer(
     currentScreen: Screen,
     closeDrawer: () -> Unit
 ) {
     AppDrawer(
         headerContent = {
-            Row(modifier = Spacing(16.dp)) {
-                VectorImage(id = R.drawable.ic_logo, tint = (+MaterialTheme.colors()).onBackground)
-                WidthSpacer(16.dp)
+            Row(modifier = LayoutPadding(top = 24.dp, bottom = 24.dp, right = 16.dp, left = 16.dp)) {
+                VectorImage(id = R.drawable.ic_logo, tint = (MaterialTheme.colors()).onBackground)
+                Spacer(LayoutWidth(16.dp))
                 Column {
                     Text(
-                        "${+stringResource(R.string.app_name)} ${+stringResource(R.string.schedule)}",
-                        style = (+MaterialTheme.typography()).h6
+                        "${stringResource(R.string.app_name)} ${stringResource(R.string.schedule)}",
+                        style = (MaterialTheme.typography()).h6
                     )
                     Text(
-                        +stringResource(R.string.app_description),
-                        style = (+MaterialTheme.typography()).subtitle1.copy(
-                            color = (+MaterialTheme.colors()).onPrimary.copy(alpha = 0.6f)
+                        stringResource(R.string.app_description),
+                        style = (MaterialTheme.typography()).subtitle1.copy(
+                            color = (MaterialTheme.colors()).onPrimary.copy(alpha = 0.6f)
                         )
 
                     )
@@ -84,7 +66,7 @@ private fun BonjwaAppDrawer(
         bodyContent = {
             DrawerButton(
                 icon = R.drawable.ic_calendar,
-                label = +stringResource(R.string.schedule),
+                label = stringResource(R.string.schedule),
                 isSelected = currentScreen == Screen.Schedule
             ) {
                 navigateTo(Screen.Schedule)
@@ -92,7 +74,7 @@ private fun BonjwaAppDrawer(
             }
             DrawerButton(
                 icon = R.drawable.ic_calendar,
-                label = +stringResource(R.string.events),
+                label = stringResource(R.string.events),
                 isSelected = currentScreen == Screen.Events
             ) {
                 navigateTo(Screen.Events)
@@ -100,7 +82,7 @@ private fun BonjwaAppDrawer(
             }
             DrawerButton(
                 icon = R.drawable.ic_settings,
-                label = +stringResource(R.string.settings),
+                label = stringResource(R.string.settings),
                 isSelected = currentScreen == Screen.Settings
             ) {
                 navigateTo(Screen.Settings)

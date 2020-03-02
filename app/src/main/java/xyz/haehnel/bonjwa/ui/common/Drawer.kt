@@ -2,16 +2,14 @@ package xyz.haehnel.bonjwa.ui.common
 
 import androidx.annotation.DrawableRes
 import androidx.compose.Composable
-import androidx.compose.unaryPlus
 import androidx.ui.core.Modifier
 import androidx.ui.core.Text
-import androidx.ui.core.dp
 import androidx.ui.layout.*
-import androidx.ui.material.Button
 import androidx.ui.material.Divider
 import androidx.ui.material.MaterialTheme
-import androidx.ui.material.TextButtonStyle
+import androidx.ui.material.TextButton
 import androidx.ui.material.surface.Surface
+import androidx.ui.unit.dp
 import xyz.haehnel.bonjwa.ui.VectorImage
 
 @Composable
@@ -20,13 +18,12 @@ fun AppDrawer(
     bodyContent: @Composable() () -> Unit,
     footerContent: @Composable (() -> Unit)? = null
 ) {
-    val dividerColor = (+MaterialTheme.colors()).onPrimary.copy(alpha = 0.05f)
+    val dividerColor = MaterialTheme.colors().onPrimary.copy(alpha = 0.05f)
 
     Column(
-        modifier = Expanded,
+        modifier = LayoutHeight.Fill,
         arrangement = Arrangement.Begin
     ) {
-        HeightSpacer(24.dp)
         if (headerContent != null) {
             headerContent()
             Divider(color = dividerColor)
@@ -49,7 +46,7 @@ fun DrawerButton(
     isSelected: Boolean,
     action: () -> Unit
 ) {
-    val colors = +MaterialTheme.colors()
+    val colors = MaterialTheme.colors()
     val textIconColor = if (isSelected) {
         colors.onPrimary
     } else {
@@ -65,18 +62,18 @@ fun DrawerButton(
         modifier = modifier,
         color = backgroundColor
     ) {
-        Button(onClick = action, style = TextButtonStyle(), modifier = Spacing(left = 8.dp, top = 8.dp, right = 8.dp, bottom = 8.dp)) {
-            Row(ExpandedWidth, arrangement = Arrangement.Begin) {
+        TextButton(onClick = action, modifier = LayoutPadding(8.dp)) {
+            Row(LayoutWidth.Fill, arrangement = Arrangement.Begin) {
                 VectorImage(
-                    modifier = Gravity.Center,
+                    modifier = LayoutGravity.Center,
                     id = icon,
                     tint = textIconColor
                 )
-                WidthSpacer(16.dp)
+                Spacer(LayoutWidth(16.dp))
                 Text(
-                    modifier = Gravity.Center,
+                    modifier = LayoutGravity.Center,
                     text = label,
-                    style = (+MaterialTheme.typography()).body1.copy(
+                    style = (MaterialTheme.typography()).body1.copy(
                         color = textIconColor
                     )
                 )
@@ -92,25 +89,25 @@ fun DrawerInfo(
     text: String,
     action: (() -> Unit)? = null
 ) {
-    val color = (+MaterialTheme.colors()).onPrimary.copy(0.6f)
+    val color = (MaterialTheme.colors()).onPrimary.copy(0.6f)
 
     Surface(
         modifier = modifier
     ) {
-        Button(onClick = action, style = TextButtonStyle(), modifier = Spacing(left = 8.dp, top = 4.dp, right = 8.dp, bottom = 4.dp)) {
-            Row(ExpandedWidth, arrangement = Arrangement.Begin) {
+        TextButton(onClick = action, modifier = LayoutPadding(left = 8.dp, top = 4.dp, right = 8.dp, bottom = 4.dp)) {
+            Row(LayoutWidth.Fill, arrangement = Arrangement.Begin) {
                 if (icon != null) {
                     VectorImage(
-                        modifier = Gravity.Center,
+                        modifier = LayoutGravity.Center,
                         id = icon,
                         tint = color
                     )
-                    WidthSpacer(16.dp)
+                    Spacer(LayoutWidth(16.dp))
                 }
                 Text(
-                    modifier = Gravity.Center,
+                    modifier = LayoutGravity.Center,
                     text = text,
-                    style = (+MaterialTheme.typography()).subtitle2.copy(
+                    style = (MaterialTheme.typography()).subtitle2.copy(
                         color = color
                     )
                 )

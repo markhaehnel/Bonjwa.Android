@@ -1,9 +1,9 @@
 package xyz.haehnel.bonjwa.ui
 
 import androidx.ui.graphics.Color
-import androidx.ui.material.ColorPalette
+import androidx.ui.material.lightColorPalette
 
-val darkTheme = ColorPalette(
+val darkTheme = lightColorPalette(
     primary = Color(18, 18, 18),
     primaryVariant = Color(24, 24, 24),
     secondary = Color(0xFF1E9761),
@@ -18,7 +18,7 @@ val darkTheme = ColorPalette(
     onError = Color.White
 )
 
-val lightTheme = ColorPalette(
+val lightTheme = lightColorPalette(
     primary = Color(255, 255, 255),
     primaryVariant = Color(255, 255, 255),
     secondary = Color(0xFF1E9761),

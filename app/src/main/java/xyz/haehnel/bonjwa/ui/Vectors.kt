@@ -2,14 +2,13 @@ package xyz.haehnel.bonjwa.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.Composable
-import androidx.compose.unaryPlus
+import androidx.ui.core.DensityAmbient
 import androidx.ui.core.Modifier
-import androidx.ui.core.WithDensity
 import androidx.ui.foundation.Clickable
 import androidx.ui.graphics.Color
 import androidx.ui.graphics.vector.DrawVector
 import androidx.ui.layout.Container
-import androidx.ui.layout.Size
+import androidx.ui.layout.LayoutSize
 import androidx.ui.material.MaterialTheme
 import androidx.ui.material.ripple.Ripple
 import androidx.ui.res.vectorResource
@@ -18,7 +17,7 @@ import androidx.ui.res.vectorResource
 fun TopAppBarVectorButton(@DrawableRes id: Int, onClick: () -> Unit) {
     Ripple(bounded = false) {
         Clickable(onClick = onClick) {
-            VectorImage(id = id, tint = (+MaterialTheme.colors()).onPrimary)
+            VectorImage(id = id, tint = MaterialTheme.colors().onPrimary)
         }
     }
 }
@@ -29,10 +28,10 @@ fun VectorImage(
     @DrawableRes id: Int,
     tint: Color = Color.Transparent
 ) {
-    val vector = +vectorResource(id)
-    WithDensity {
+    val vector = vectorResource(id)
+    with(DensityAmbient.current) {
         Container(
-            modifier = modifier wraps Size(vector.defaultWidth.toDp(), vector.defaultHeight.toDp())
+            modifier = modifier + LayoutSize(vector.defaultWidth, vector.defaultHeight)
         ) {
             DrawVector(vector, tint)
         }

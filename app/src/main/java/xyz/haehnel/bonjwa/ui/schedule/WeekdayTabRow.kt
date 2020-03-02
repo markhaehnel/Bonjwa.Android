@@ -1,7 +1,7 @@
 package xyz.haehnel.bonjwa.ui.schedule
 
 import androidx.compose.Composable
-import androidx.compose.State
+import androidx.compose.MutableState
 import androidx.ui.material.Tab
 import androidx.ui.material.TabRow
 import java.util.*
@@ -9,8 +9,7 @@ import java.util.*
 @Composable
 fun WeekdayTabRow(
     items: Map<Int, String>,
-    selectedIndex: State<Int>,
-    onClick: (selectedIndex: Int) -> Unit
+    selectedIndex: MutableState<Int>
 ) {
 
     val c = Calendar.getInstance()
@@ -27,10 +26,10 @@ fun WeekdayTabRow(
 
         Tab(
             text = weekdayText,
-            selected = selectedIndex.value == index
-        ) {
-            selectedIndex.value = index
-            onClick(index)
-        }
+            selected = selectedIndex.value == index,
+            onSelected = {
+                selectedIndex.value = index
+            }
+        )
     }
 }

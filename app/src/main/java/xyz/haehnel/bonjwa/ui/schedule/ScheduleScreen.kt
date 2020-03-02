@@ -3,14 +3,11 @@ package xyz.haehnel.bonjwa.ui.schedule
 import androidx.compose.*
 import androidx.ui.core.TestTag
 import androidx.ui.core.Text
-import androidx.ui.core.dp
 import androidx.ui.layout.*
-import androidx.ui.material.Button
-import androidx.ui.material.CircularProgressIndicator
-import androidx.ui.material.MaterialTheme
-import androidx.ui.material.TopAppBar
+import androidx.ui.material.*
 import androidx.ui.material.surface.Card
 import androidx.ui.res.stringResource
+import androidx.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,6 +16,8 @@ import org.threeten.bp.DateTimeUtils
 import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
 import xyz.haehnel.bonjwa.repo.ScheduleRepository
+import xyz.haehnel.bonjwa.ui.BonjwaAppDrawer
+import xyz.haehnel.bonjwa.ui.Screen
 import xyz.haehnel.bonjwa.ui.TopAppBarVectorButton
 import xyz.haehnel.bonjwa.ui.common.ActionBarItem
 import java.util.*
@@ -64,9 +63,9 @@ class ScheduleModel(
 }
 
 @Composable
-fun ScheduleScreen(openDrawer: () -> Unit) {
-    val selectedTabIndex = +state { 0 }
-    val model = +memo { ScheduleModel() }
+fun ScheduleScreen(scaffoldState: ScaffoldState = remember { ScaffoldState() }) {
+    val selectedTabIndex = state { 0 }
+    val model = remember { ScheduleModel() }
 
     val actionData = listOf(
         ActionBarItem(R.drawable.ic_calendar_today) {
@@ -77,64 +76,71 @@ fun ScheduleScreen(openDrawer: () -> Unit) {
         ActionBarItem(R.drawable.ic_refresh) { model.fetchSchedule() }
     )
 
-    +onActive {
+    onActive {
         model.fetchSchedule()
     }
 
-    FlexColumn {
-        inflexible {
-            TopAppBar(
-                title = {
-                    TestTag("APP_TITLE") {
-                        Text(
-                            "${+stringResource(R.string.app_name)} ${+stringResource(R.string.schedule)}"
-                        )
+    Scaffold(
+        scaffoldState = scaffoldState,
+        drawerContent = {
+            BonjwaAppDrawer(
+                currentScreen = Screen.Schedule,
+                closeDrawer = { scaffoldState.drawerState = DrawerState.Closed }
+            )
+        },
+        topAppBar = {
+            Column {
+                TopAppBar(
+                    title = {
+                        TestTag("APP_TITLE") {
+                            Text(
+                                "${stringResource(R.string.app_name)} ${stringResource(R.string.schedule)}"
+                            )
+                        }
+                    },
+                    actionData = actionData,
+                    navigationIcon = {
+                        TopAppBarVectorButton(id = R.drawable.ic_hamburger, onClick = {
+                            scaffoldState.drawerState = DrawerState.Opened
+                        })
                     }
-                },
-                actionData = actionData,
-                navigationIcon = {
-                    TopAppBarVectorButton(id = R.drawable.ic_hamburger, onClick = openDrawer)
+                ) { actionItem ->
+                    TopAppBarVectorButton(
+                        id = actionItem.vectorResource,
+                        onClick = { actionItem.action() }
+                    )
                 }
-            ) { actionItem ->
-                TopAppBarVectorButton(
-                    id = actionItem.vectorResource,
-                    onClick = { actionItem.action() }
-                )
+                WeekdayTabRow(weekdays, selectedTabIndex)
             }
-        }
-        inflexible {
-            WeekdayTabRow(weekdays, selectedTabIndex, onClick = { index ->
-                selectedTabIndex.value = index
-            })
-        }
-        expanded(1f) {
 
+        },
+        bodyContent = {
             if (model.isLoading) {
                 Row(
-                    modifier = ExpandedWidth,
+                    modifier = LayoutWidth.Fill,
                     arrangement = Arrangement.Center
                 ) {
-                    CircularProgressIndicator((+MaterialTheme.colors()).secondary)
+                    CircularProgressIndicator((MaterialTheme.colors()).secondary)
                 }
             } else if (model.error != null) {
                 Column(
-                    modifier = ExpandedWidth,
+                    modifier = LayoutWidth.Fill,
                     arrangement = Arrangement.Center
                 ) {
                     Card(
                         elevation = 4.dp,
-                        color = (+MaterialTheme.colors()).error
+                        color = (MaterialTheme.colors()).error,
+                        modifier = LayoutPadding(16.dp)
                     ) {
-                        Padding(16.dp) {
-                            Column(
-                                arrangement = Arrangement.Center
+                        Column(
+                            arrangement = Arrangement.Center
+                        ) {
+                            Text(text = model.error!!)
+                            Spacer(LayoutHeight(8.dp))
+                            Button(
+                                onClick = { model.fetchSchedule() }
                             ) {
-                                Text(text = model.error!!)
-                                HeightSpacer(height = 8.dp)
-                                Button(
-                                    text = +stringResource(R.string.retry),
-                                    onClick = { model.fetchSchedule() }
-                                )
+                                Text(stringResource(R.string.retry))
                             }
                         }
                     }
@@ -161,23 +167,21 @@ fun ScheduleScreen(openDrawer: () -> Unit) {
                     WeekdayColumn(weekdayItems)
                 } else {
                     Column(
-                        modifier = ExpandedWidth
+                        modifier = LayoutWidth.Fill
                     ) {
                         Card(
-                            color = (+MaterialTheme.colors()).primaryVariant,
-                            modifier = ExpandedWidth
+                            color = (MaterialTheme.colors()).primaryVariant,
+                            modifier = LayoutWidth.Fill + LayoutPadding(16.dp)
                         ) {
-                            Padding(16.dp) {
-                                if (model.schedule.isNullOrEmpty() && c.get(Calendar.DAY_OF_WEEK) == 2) {
-                                    Text(+stringResource(R.string.schedule_not_published))
-                                } else {
-                                    Text(+stringResource(R.string.schedule_not_live))
-                                }
+                            if (model.schedule.isNullOrEmpty() && c.get(Calendar.DAY_OF_WEEK) == 2) {
+                                Text(stringResource(R.string.schedule_not_published))
+                            } else {
+                                Text(stringResource(R.string.schedule_not_live))
                             }
                         }
                     }
                 }
             }
         }
-    }
+    )
 }

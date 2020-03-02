@@ -3,7 +3,7 @@ package xyz.haehnel.bonjwa.ui.schedule
 import androidx.compose.Composable
 import androidx.ui.foundation.VerticalScroller
 import androidx.ui.layout.Column
-import androidx.ui.layout.ExpandedWidth
+import androidx.ui.layout.LayoutWidth
 import androidx.ui.material.Divider
 import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
 
@@ -11,7 +11,7 @@ import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
 fun WeekdayColumn(weekdayItems: List<BonjwaScheduleItem>) {
     VerticalScroller {
         Column(
-            modifier = ExpandedWidth
+            modifier = LayoutWidth.Fill
         ) {
             for (item in weekdayItems) {
                 ScheduleItemCard(item = item)
