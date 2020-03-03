@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         setContent {
-            BonjwaApp()
+                BonjwaApp()
         }
     }
 

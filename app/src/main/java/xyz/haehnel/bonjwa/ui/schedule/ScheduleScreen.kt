@@ -1,6 +1,9 @@
 package xyz.haehnel.bonjwa.ui.schedule
 
+import android.content.Intent
 import androidx.compose.*
+import androidx.core.content.ContextCompat.startActivity
+import androidx.ui.core.ContextAmbient
 import androidx.ui.core.TestTag
 import androidx.ui.core.Text
 import androidx.ui.layout.*
@@ -19,6 +22,7 @@ import xyz.haehnel.bonjwa.repo.ScheduleRepository
 import xyz.haehnel.bonjwa.ui.BonjwaAppDrawer
 import xyz.haehnel.bonjwa.ui.Screen
 import xyz.haehnel.bonjwa.ui.TopAppBarVectorButton
+import xyz.haehnel.bonjwa.ui.VectorImage
 import xyz.haehnel.bonjwa.ui.common.ActionBarItem
 import java.util.*
 
@@ -180,6 +184,23 @@ fun ScheduleScreen(scaffoldState: ScaffoldState = remember { ScaffoldState() }) 
                             }
                         }
                     }
+                }
+            }
+        },
+        floatingActionButton = {
+            if (model.schedule.any { it.isRunning }) {
+                val context = ContextAmbient.current
+                FloatingActionButton(
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        intent.data = BONJWA_CHANNEL_URL
+                        context.startActivity(intent)
+                    },
+                    color = MaterialTheme.colors().secondary
+                ) {
+                    VectorImage(
+                        id = R.drawable.ic_play
+                    )
                 }
             }
         }

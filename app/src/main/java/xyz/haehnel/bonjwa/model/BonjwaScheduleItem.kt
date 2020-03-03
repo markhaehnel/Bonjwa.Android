@@ -8,4 +8,11 @@ class BonjwaScheduleItem(
     val startDate: Instant,
     val endDate: Instant,
     val cancelled: Boolean
-)
+) {
+    var isRunning: Boolean = false
+        get() {
+            val now = Instant.now()
+            return startDate.isBefore(now) && endDate.isAfter(now)
+        }
+        private set
+}
