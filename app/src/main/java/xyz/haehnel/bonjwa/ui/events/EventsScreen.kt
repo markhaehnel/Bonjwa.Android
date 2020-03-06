@@ -4,13 +4,13 @@ import androidx.compose.Composable
 import androidx.compose.Model
 import androidx.compose.onActive
 import androidx.compose.remember
+import androidx.ui.animation.Crossfade
 import androidx.ui.core.Text
-import androidx.ui.foundation.VerticalScroller
-import androidx.ui.layout.*
-import androidx.ui.material.*
-import androidx.ui.material.surface.Card
+import androidx.ui.material.DrawerState
+import androidx.ui.material.Scaffold
+import androidx.ui.material.ScaffoldState
+import androidx.ui.material.TopAppBar
 import androidx.ui.res.stringResource
-import androidx.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,29 +22,36 @@ import xyz.haehnel.bonjwa.ui.BonjwaAppDrawer
 import xyz.haehnel.bonjwa.ui.Screen
 import xyz.haehnel.bonjwa.ui.TopAppBarVectorButton
 import xyz.haehnel.bonjwa.ui.common.ActionBarItem
+import xyz.haehnel.bonjwa.ui.common.ErrorCard
+
+sealed class EventsScreenState {
+    object Loading: EventsScreenState()
+    object Complete: EventsScreenState()
+    object Error: EventsScreenState()
+}
 
 @Model
 class EventsModel(
-    var isLoading: Boolean = false,
+    var screenState: EventsScreenState = EventsScreenState.Loading,
     var events: MutableList<BonjwaEventItem> = mutableListOf(),
-    var error: String? = null
+    var error: String = ""
 ) {
 
     fun fetchEvents() {
-        error = null
-        isLoading = true
+        error = ""
+        screenState = EventsScreenState.Loading
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val retrievedEvents = ScheduleRepository().getEvents().await()
                 withContext(Dispatchers.Main) {
                     events.clear()
                     events.addAll(retrievedEvents)
-                    isLoading = false
+                    screenState = EventsScreenState.Complete
                 }
             } catch (ex: Exception) {
                 withContext(Dispatchers.Main) {
                     error = "Fehler beim Laden der Events."
-                    isLoading = false
+                    screenState = EventsScreenState.Error
                 }
             }
         }
@@ -52,8 +59,11 @@ class EventsModel(
 }
 
 @Composable
-fun EventsScreen(scaffoldState: ScaffoldState = remember { ScaffoldState() }) {
-    val model = remember { EventsModel() }
+fun EventsScreen(
+    scaffoldState: ScaffoldState = remember { ScaffoldState() },
+    eventsModel: EventsModel = EventsModel()
+) {
+    val model = remember { eventsModel }
 
     val actionData = listOf(
         ActionBarItem(R.drawable.ic_refresh) { model.fetchEvents() }
@@ -90,80 +100,15 @@ fun EventsScreen(scaffoldState: ScaffoldState = remember { ScaffoldState() }) {
             )
         },
         bodyContent = {
-            if (model.isLoading) {
-                Row(
-                    modifier = LayoutSize.Fill,
-                    arrangement = Arrangement.Center
-                ) {
-                    CircularProgressIndicator((MaterialTheme.colors()).secondary)
-                }
-            } else if (model.error != null) {
-                Column(
-                    modifier = LayoutSize.Fill,
-                    arrangement = Arrangement.Center
-                ) {
-                    Card(
-                        elevation = 4.dp,
-                        color = (MaterialTheme.colors()).error
-                    ) {
-                        Column(
-                            arrangement = Arrangement.Center,
-                            modifier = LayoutPadding(16.dp)
-                        ) {
-                            Text(text = model.error!!)
-                            Spacer(LayoutHeight(height = 8.dp))
-                            Button(
-                                onClick = { model.fetchEvents() }
-                            ) {
-                                Text(stringResource(R.string.retry))
-                            }
-                        }
-                    }
-                }
-            } else {
-                if (!model.events.isNullOrEmpty()) {
-                    VerticalScroller {
-                        Column(
-                            modifier = LayoutWidth.Fill
-                        ) {
-                            for (item in model.events) {
-                                EventItemCard(item = item)
-                                Divider()
-                            }
-                        }
-                    }
-
-                } else {
-                    Column(
-                    ) {
-                        Card(
-                            color = (MaterialTheme.colors()).primaryVariant
-                        ) {
-                            Text(
-                                stringResource(R.string.events_empty),
-                                modifier = LayoutPadding(16.dp)
-                            )
-                        }
+            Crossfade(model.screenState) { screenState ->
+                when (screenState) {
+                    is EventsScreenState.Loading -> CircularLoadingIndicator()
+                    is EventsScreenState.Complete -> EventItemList(model.events)
+                    is EventsScreenState.Error -> ErrorCard(model.error) {
+                        model.fetchEvents()
                     }
                 }
             }
         }
     )
-}
-
-@Composable
-fun EventItemCard(item: BonjwaEventItem) {
-    Card(
-        color = (MaterialTheme.colors()).primaryVariant
-    ) {
-        Row(modifier = LayoutPadding(16.dp) + LayoutWidth.Fill) {
-            Column {
-                Text(text = item.title, style = (MaterialTheme.typography()).h6)
-                Text(
-                    text = item.date,
-                    style = (MaterialTheme.typography()).subtitle1
-                )
-            }
-        }
-    }
 }

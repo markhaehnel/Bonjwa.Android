@@ -1,6 +1,5 @@
 package xyz.haehnel.bonjwa.ui.schedule
 
-import android.net.Uri
 import androidx.compose.Composable
 import androidx.ui.core.Text
 import androidx.ui.layout.*
@@ -8,11 +7,13 @@ import androidx.ui.material.MaterialTheme
 import androidx.ui.material.surface.Card
 import androidx.ui.text.style.TextAlign
 import androidx.ui.text.style.TextOverflow
+import androidx.ui.tooling.preview.Preview
 import androidx.ui.unit.dp
+import org.threeten.bp.Instant
 import org.threeten.bp.ZoneOffset
 import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
-
-val BONJWA_CHANNEL_URL : Uri = Uri.parse("https://twitch.tv/bonjwa")
+import xyz.haehnel.bonjwa.ui.darkTheme
+import xyz.haehnel.bonjwa.ui.lightTheme
 
 @Composable
 fun ScheduleItemCard(item: BonjwaScheduleItem) {
@@ -64,4 +65,33 @@ fun ScheduleItemCard(item: BonjwaScheduleItem) {
         }
 
     }
+}
+
+@Preview("Schedule Item Card (Dark)")
+@Composable
+fun previewDarkScheduleItemCard() {
+    MaterialTheme(darkTheme) {
+        previewScheduleItemCard()
+    }
+}
+
+@Preview("Schedule Item Card (Light)")
+@Composable
+fun previewLightScheduleItemCard() {
+    MaterialTheme(lightTheme) {
+        previewScheduleItemCard()
+    }
+}
+
+@Composable
+fun previewScheduleItemCard() {
+    val scheduleItem = BonjwaScheduleItem(
+        "Briefing",
+        "Matteo, Leon & Niklas",
+        Instant.now(),
+        Instant.now().plusSeconds(3600),
+        false
+    )
+
+    ScheduleItemCard(scheduleItem)
 }

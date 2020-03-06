@@ -1,13 +1,12 @@
 package xyz.haehnel.bonjwa
 
 import androidx.compose.Composable
-import androidx.ui.core.semantics.getOrNull
 import androidx.ui.material.MaterialTheme
 import androidx.ui.material.surface.Surface
-import androidx.ui.semantics.SemanticsProperties
 import androidx.ui.test.ComposeTestRule
 import androidx.ui.test.SemanticsNodeInteraction
 import androidx.ui.test.findAll
+import androidx.ui.test.hasSubstring
 import xyz.haehnel.bonjwa.ui.BonjwaApp
 import xyz.haehnel.bonjwa.ui.BonjwaStatus
 import xyz.haehnel.bonjwa.ui.Screen
@@ -49,8 +48,8 @@ fun workForComposeToBeIdle() {
     Thread.sleep(500)
 }
 
-fun findAllByText(text: String, ignoreCase: Boolean = false): List<SemanticsNodeInteraction> {
-    return findAll {
-        getOrNull(SemanticsProperties.AccessibilityLabel).equals(text, ignoreCase)
-    }
+fun findAllBySubstring(text: String, ignoreCase: Boolean = false): List<SemanticsNodeInteraction> {
+    return findAll(
+        hasSubstring(text, ignoreCase)
+    )
 }

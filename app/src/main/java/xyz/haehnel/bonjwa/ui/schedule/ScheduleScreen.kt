@@ -1,20 +1,19 @@
 package xyz.haehnel.bonjwa.ui.schedule
 
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.*
+import androidx.ui.animation.Crossfade
 import androidx.ui.core.ContextAmbient
 import androidx.ui.core.TestTag
 import androidx.ui.core.Text
-import androidx.ui.layout.*
+import androidx.ui.layout.Column
 import androidx.ui.material.*
-import androidx.ui.material.surface.Card
 import androidx.ui.res.stringResource
-import androidx.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.threeten.bp.DateTimeUtils
 import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
 import xyz.haehnel.bonjwa.repo.ScheduleRepository
@@ -23,6 +22,8 @@ import xyz.haehnel.bonjwa.ui.Screen
 import xyz.haehnel.bonjwa.ui.TopAppBarVectorButton
 import xyz.haehnel.bonjwa.ui.VectorImage
 import xyz.haehnel.bonjwa.ui.common.ActionBarItem
+import xyz.haehnel.bonjwa.ui.common.ErrorCard
+import xyz.haehnel.bonjwa.ui.events.CircularLoadingIndicator
 import java.util.*
 
 val weekdays =
@@ -36,29 +37,36 @@ val weekdays =
         1 to "Sonntag"
     )
 
+val BONJWA_CHANNEL_URL : Uri = Uri.parse("https://twitch.tv/bonjwa")
+
+sealed class ScheduleScreenState {
+    object Loading : ScheduleScreenState()
+    object Complete : ScheduleScreenState()
+    object Error : ScheduleScreenState()
+}
+
 @Model
 class ScheduleModel(
-    var isLoading: Boolean = false,
+    var screenState: ScheduleScreenState = ScheduleScreenState.Loading,
     var schedule: MutableList<BonjwaScheduleItem> = mutableListOf(),
-    var error: String? = null,
-    var initialSelectionDone: Boolean = false
+    var error: String = ""
 ) {
 
     fun fetchSchedule() {
-        error = null
-        isLoading = true
+        error = ""
+        screenState = ScheduleScreenState.Loading
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val retrievedSchedule = ScheduleRepository().getSchedule().await()
                 withContext(Dispatchers.Main) {
                     schedule.clear()
                     schedule.addAll(retrievedSchedule)
-                    isLoading = false
+                    screenState = ScheduleScreenState.Complete
                 }
             } catch (ex: Exception) {
                 withContext(Dispatchers.Main) {
                     error = "Fehler beim Laden des Sendeplans."
-                    isLoading = false
+                    screenState = ScheduleScreenState.Error
                 }
             }
         }
@@ -67,8 +75,8 @@ class ScheduleModel(
 
 @Composable
 fun ScheduleScreen(scaffoldState: ScaffoldState = remember { ScaffoldState() }) {
-    val selectedTabIndex = state { 0 }
     val model = remember { ScheduleModel() }
+    val selectedTabIndex = state { 0 }
 
     val actionData = listOf(
         ActionBarItem(R.drawable.ic_calendar_today) {
@@ -123,70 +131,13 @@ fun ScheduleScreen(scaffoldState: ScaffoldState = remember { ScaffoldState() }) 
 
         },
         bodyContent = {
-            if (model.isLoading) {
-                Row(
-                    modifier = LayoutWidth.Fill,
-                    arrangement = Arrangement.Center
-                ) {
-                    CircularProgressIndicator((MaterialTheme.colors()).secondary)
-                }
-            } else if (model.error != null) {
-                Column(
-                    modifier = LayoutWidth.Fill,
-                    arrangement = Arrangement.Center
-                ) {
-                    Card(
-                        elevation = 4.dp,
-                        color = (MaterialTheme.colors()).error,
-                        modifier = LayoutPadding(16.dp)
-                    ) {
-                        Column(
-                            arrangement = Arrangement.Center
-                        ) {
-                            Text(text = model.error!!)
-                            Spacer(LayoutHeight(8.dp))
-                            Button(
-                                onClick = { model.fetchSchedule() }
-                            ) {
-                                Text(stringResource(R.string.retry))
-                            }
-                        }
-                    }
-                }
-            } else {
-                val weekdaysAsList = weekdays.toList()
 
-                // Select weekday
-                val c = Calendar.getInstance()
-                if (!model.initialSelectionDone && model.schedule.size > 0) {
-                    selectedTabIndex.value =
-                        weekdaysAsList.indexOfFirst { it.first == c.get(Calendar.DAY_OF_WEEK) }
-                    model.initialSelectionDone = true
-                }
-
-                val weekdayFromSelectedIndex = weekdaysAsList[selectedTabIndex.value].first
-
-                val weekdayItems = model.schedule.filter {
-                    c.time = DateTimeUtils.toDate(it.startDate)
-                    c.get(Calendar.DAY_OF_WEEK) == weekdayFromSelectedIndex
-                }
-
-                if (weekdayItems.isNotEmpty()) {
-                    WeekdayColumn(weekdayItems)
-                } else {
-                    Column(
-                        modifier = LayoutWidth.Fill
-                    ) {
-                        Card(
-                            color = (MaterialTheme.colors()).primaryVariant,
-                            modifier = LayoutWidth.Fill + LayoutPadding(16.dp)
-                        ) {
-                            if (model.schedule.isNullOrEmpty() && c.get(Calendar.DAY_OF_WEEK) == 2) {
-                                Text(stringResource(R.string.schedule_not_published))
-                            } else {
-                                Text(stringResource(R.string.schedule_not_live))
-                            }
-                        }
+            Crossfade(model.screenState) { screenState ->
+                when (screenState) {
+                    is ScheduleScreenState.Loading -> CircularLoadingIndicator()
+                    is ScheduleScreenState.Complete -> ScheduleItemList(model.schedule, selectedTabIndex)
+                    is ScheduleScreenState.Error -> ErrorCard(model.error) {
+                        model.fetchSchedule()
                     }
                 }
             }
