@@ -2,6 +2,7 @@ package xyz.haehnel.bonjwa.ui.schedule
 
 import androidx.compose.Composable
 import androidx.compose.MutableState
+import androidx.ui.core.Text
 import androidx.ui.material.Tab
 import androidx.ui.material.TabRow
 import java.util.*
@@ -22,10 +23,8 @@ fun WeekdayTabRow(
 
         val todayIndex = items.toList().indexOfFirst { it.first == c.get(Calendar.DAY_OF_WEEK) }
 
-        val weekdayText = if (todayIndex == index) "• $text" else text
-
         Tab(
-            text = weekdayText,
+            text = { Text(text) },
             selected = selectedIndex.value == index,
             onSelected = {
                 selectedIndex.value = index

@@ -44,7 +44,7 @@ fun BonjwaAppDrawer(
 ) {
     AppDrawer(
         headerContent = {
-            Row(modifier = LayoutPadding(top = 24.dp, bottom = 24.dp, right = 16.dp, left = 16.dp)) {
+            Row(modifier = LayoutPadding(top = 24.dp, bottom = 24.dp, start = 16.dp, end = 16.dp)) {
                 VectorImage(id = R.drawable.ic_logo, tint = (MaterialTheme.colors()).onBackground)
                 Spacer(LayoutWidth(16.dp))
                 Column {
@@ -73,7 +73,7 @@ fun BonjwaAppDrawer(
                 closeDrawer()
             }
             DrawerButton(
-                icon = R.drawable.ic_calendar,
+                icon = R.drawable.ic_events,
                 label = stringResource(R.string.events),
                 isSelected = currentScreen == Screen.Events
             ) {

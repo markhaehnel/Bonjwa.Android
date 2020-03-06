@@ -22,7 +22,7 @@ fun AppDrawer(
 
     Column(
         modifier = LayoutHeight.Fill,
-        arrangement = Arrangement.Begin
+        arrangement = Arrangement.Top
     ) {
         if (headerContent != null) {
             headerContent()
@@ -63,7 +63,7 @@ fun DrawerButton(
         color = backgroundColor
     ) {
         TextButton(onClick = action, modifier = LayoutPadding(8.dp)) {
-            Row(LayoutWidth.Fill, arrangement = Arrangement.Begin) {
+            Row(LayoutWidth.Fill, arrangement = Arrangement.Start) {
                 VectorImage(
                     modifier = LayoutGravity.Center,
                     id = icon,
@@ -94,8 +94,8 @@ fun DrawerInfo(
     Surface(
         modifier = modifier
     ) {
-        TextButton(onClick = action, modifier = LayoutPadding(left = 8.dp, top = 4.dp, right = 8.dp, bottom = 4.dp)) {
-            Row(LayoutWidth.Fill, arrangement = Arrangement.Begin) {
+        TextButton(onClick = action, modifier = LayoutPadding(start = 8.dp, top = 4.dp, end = 8.dp, bottom = 4.dp)) {
+            Row(LayoutWidth.Fill, arrangement = Arrangement.Start) {
                 if (icon != null) {
                     VectorImage(
                         modifier = LayoutGravity.Center,

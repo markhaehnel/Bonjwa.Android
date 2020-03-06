@@ -8,16 +8,24 @@ import androidx.ui.foundation.Clickable
 import androidx.ui.graphics.Color
 import androidx.ui.graphics.vector.DrawVector
 import androidx.ui.layout.Container
+import androidx.ui.layout.LayoutPadding
 import androidx.ui.layout.LayoutSize
 import androidx.ui.material.MaterialTheme
 import androidx.ui.material.ripple.Ripple
 import androidx.ui.res.vectorResource
+import androidx.ui.unit.dp
 
 @Composable
-fun TopAppBarVectorButton(@DrawableRes id: Int, onClick: () -> Unit) {
+fun TopAppBarVectorButton(
+    @DrawableRes id: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = LayoutPadding(start = 8.dp, end = 8.dp)
+) {
     Ripple(bounded = false) {
         Clickable(onClick = onClick) {
-            VectorImage(id = id, tint = MaterialTheme.colors().onPrimary)
+            Container(modifier) {
+                VectorImage(id = id, tint = MaterialTheme.colors().onPrimary)
+            }
         }
     }
 }
@@ -31,8 +39,7 @@ fun VectorImage(
     val vector = vectorResource(id)
     with(DensityAmbient.current) {
         Container(
-            modifier = modifier + LayoutSize(vector.defaultWidth, vector.defaultHeight)
-        ) {
+            modifier = modifier+ LayoutSize(vector.defaultWidth, vector.defaultHeight)) {
             DrawVector(vector, tint)
         }
     }

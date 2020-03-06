@@ -2,7 +2,6 @@ package xyz.haehnel.bonjwa.ui.schedule
 
 import android.content.Intent
 import androidx.compose.*
-import androidx.core.content.ContextCompat.startActivity
 import androidx.ui.core.ContextAmbient
 import androidx.ui.core.TestTag
 import androidx.ui.core.Text
@@ -102,18 +101,23 @@ fun ScheduleScreen(scaffoldState: ScaffoldState = remember { ScaffoldState() }) 
                             )
                         }
                     },
-                    actionData = actionData,
                     navigationIcon = {
-                        TopAppBarVectorButton(id = R.drawable.ic_hamburger, onClick = {
-                            scaffoldState.drawerState = DrawerState.Opened
-                        })
+                        TopAppBarVectorButton(
+                            id = R.drawable.ic_hamburger,
+                            onClick = {
+                                scaffoldState.drawerState = DrawerState.Opened
+                            }
+                        )
+                    },
+                    actions = {
+                        actionData.forEach {
+                            TopAppBarVectorButton(
+                                id = it.vectorResource,
+                                onClick = { it.action() }
+                            )
+                        }
                     }
-                ) { actionItem ->
-                    TopAppBarVectorButton(
-                        id = actionItem.vectorResource,
-                        onClick = { actionItem.action() }
-                    )
-                }
+                )
                 WeekdayTabRow(weekdays, selectedTabIndex)
             }
 

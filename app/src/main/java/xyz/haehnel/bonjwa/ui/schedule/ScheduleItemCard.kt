@@ -41,10 +41,10 @@ fun ScheduleItemCard(item: BonjwaScheduleItem) {
             Text(
                 text = "$startText\n—\n$endText",
                 style = (MaterialTheme.typography()).subtitle2.copy(textAlign = TextAlign.Center),
-                modifier = LayoutPadding(right = 16.dp) + LayoutWidth(40.dp) + LayoutGravity.Center
+                modifier = LayoutPadding(end = 16.dp) + LayoutWidth(40.dp) + LayoutGravity.Center
             )
             Column(
-                modifier = LayoutPadding(right = 16.dp)
+                modifier = LayoutPadding(end = 16.dp)
             ) {
                 Text(
                     text = item.title,

@@ -74,18 +74,20 @@ fun EventsScreen(scaffoldState: ScaffoldState = remember { ScaffoldState() }) {
         topAppBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.events)) },
-                actionData = actionData,
                 navigationIcon = {
                     TopAppBarVectorButton(id = R.drawable.ic_hamburger, onClick = {
                         scaffoldState.drawerState = DrawerState.Opened
                     })
+                },
+                actions = {
+                    actionData.forEach {
+                        TopAppBarVectorButton(
+                            id = it.vectorResource,
+                            onClick = { it.action() }
+                        )
+                    }
                 }
-            ) { actionItem ->
-                TopAppBarVectorButton(
-                    id = actionItem.vectorResource,
-                    onClick = { actionItem.action() }
-                )
-            }
+            )
         },
         bodyContent = {
             if (model.isLoading) {
