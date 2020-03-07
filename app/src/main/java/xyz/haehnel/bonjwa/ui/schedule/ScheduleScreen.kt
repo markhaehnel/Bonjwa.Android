@@ -22,8 +22,8 @@ import xyz.haehnel.bonjwa.ui.Screen
 import xyz.haehnel.bonjwa.ui.TopAppBarVectorButton
 import xyz.haehnel.bonjwa.ui.VectorImage
 import xyz.haehnel.bonjwa.ui.common.ActionBarItem
+import xyz.haehnel.bonjwa.ui.common.CircularLoadingIndicator
 import xyz.haehnel.bonjwa.ui.common.ErrorCard
-import xyz.haehnel.bonjwa.ui.events.CircularLoadingIndicator
 import java.util.*
 
 val weekdays =
@@ -57,7 +57,7 @@ class ScheduleModel(
         screenState = ScheduleScreenState.Loading
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val retrievedSchedule = ScheduleRepository().getSchedule().await()
+                val retrievedSchedule = ScheduleRepository.getSchedule().await()
                 withContext(Dispatchers.Main) {
                     schedule.clear()
                     schedule.addAll(retrievedSchedule)
@@ -74,8 +74,10 @@ class ScheduleModel(
 }
 
 @Composable
-fun ScheduleScreen(scaffoldState: ScaffoldState = remember { ScaffoldState() }) {
-    val model = remember { ScheduleModel() }
+fun ScheduleScreen(
+    scaffoldState: ScaffoldState = remember { ScaffoldState() },
+    model: ScheduleModel = remember { ScheduleModel() }
+) {
     val selectedTabIndex = state { 0 }
 
     val actionData = listOf(
@@ -131,7 +133,6 @@ fun ScheduleScreen(scaffoldState: ScaffoldState = remember { ScaffoldState() }) 
 
         },
         bodyContent = {
-
             Crossfade(model.screenState) { screenState ->
                 when (screenState) {
                     is ScheduleScreenState.Loading -> CircularLoadingIndicator()

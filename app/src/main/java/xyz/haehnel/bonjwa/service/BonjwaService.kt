@@ -1,4 +1,4 @@
-package xyz.haehnel.bonjwa.api
+package xyz.haehnel.bonjwa.service
 
 import kotlinx.coroutines.Deferred
 import retrofit2.http.GET

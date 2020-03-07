@@ -22,6 +22,7 @@ import xyz.haehnel.bonjwa.ui.BonjwaAppDrawer
 import xyz.haehnel.bonjwa.ui.Screen
 import xyz.haehnel.bonjwa.ui.TopAppBarVectorButton
 import xyz.haehnel.bonjwa.ui.common.ActionBarItem
+import xyz.haehnel.bonjwa.ui.common.CircularLoadingIndicator
 import xyz.haehnel.bonjwa.ui.common.ErrorCard
 
 sealed class EventsScreenState {
@@ -42,7 +43,7 @@ class EventsModel(
         screenState = EventsScreenState.Loading
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val retrievedEvents = ScheduleRepository().getEvents().await()
+                val retrievedEvents = ScheduleRepository.getEvents().await()
                 withContext(Dispatchers.Main) {
                     events.clear()
                     events.addAll(retrievedEvents)

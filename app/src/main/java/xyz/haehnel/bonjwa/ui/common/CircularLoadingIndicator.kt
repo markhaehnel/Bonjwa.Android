@@ -1,4 +1,4 @@
-package xyz.haehnel.bonjwa.ui.events
+package xyz.haehnel.bonjwa.ui.common
 
 import androidx.compose.Composable
 import androidx.ui.layout.Container

@@ -1,60 +1,42 @@
 package xyz.haehnel.bonjwa.repo
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.ToJson
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.Deferred
-import org.threeten.bp.Instant
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import xyz.haehnel.bonjwa.api.BonjwaService
+import xyz.haehnel.bonjwa.adapter.InstantAdapter
 import xyz.haehnel.bonjwa.model.BonjwaEventItem
 import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
+import xyz.haehnel.bonjwa.service.BonjwaService
 
-class ScheduleRepository {
-    fun getSchedule(): Deferred<List<BonjwaScheduleItem>> {
+object ScheduleRepository : IScheduleRepository {
+    private const val baseUrl = "https://api.bonjwa.ezhub.de"
+    private val moshi = Moshi.Builder()
+        .add(InstantAdapter())
+        .add(KotlinJsonAdapterFactory())
+        .build()
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(baseUrl)
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .addCallAdapterFactory(CoroutineCallAdapterFactory())
+        .build()
 
-        val moshi = Moshi.Builder().add(InstantAdapter()).add(KotlinJsonAdapterFactory()).build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.bonjwa.ezhub.de")
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .addCallAdapterFactory(CoroutineCallAdapterFactory())
-            .build()
-
+    override fun getSchedule(): Deferred<List<BonjwaScheduleItem>> {
         val api = retrofit.create(BonjwaService::class.java)
-
         return api.getSchedule() // TODO: Wait for compose bugfix (https://issuetracker.google.com/issues/143468771)
     }
 
-    fun getEvents(): Deferred<List<BonjwaEventItem>> {
-
-        val moshi = Moshi.Builder().add(InstantAdapter()).add(KotlinJsonAdapterFactory()).build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.bonjwa.ezhub.de")
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .addCallAdapterFactory(CoroutineCallAdapterFactory())
-            .build()
-
+    override fun getEvents(): Deferred<List<BonjwaEventItem>> {
         val api = retrofit.create(BonjwaService::class.java)
-
         return api.getEvents() // TODO: Wait for compose bugfix (https://issuetracker.google.com/issues/143468771)
     }
 }
 
-class InstantAdapter {
-    @ToJson
-    @Suppress("unused")
-    fun toJson(instant: Instant): String {
-        return instant.toString()
-    }
-
-    @FromJson
-    @Suppress("unused")
-    fun fromJson(instant: String): Instant? {
-        return Instant.parse(instant)
-    }
+interface IScheduleRepository {
+    fun getSchedule(): Deferred<List<BonjwaScheduleItem>>
+    fun getEvents(): Deferred<List<BonjwaEventItem>>
 }
+
+
