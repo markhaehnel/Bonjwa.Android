@@ -18,30 +18,34 @@ fun AppDrawer(
     bodyContent: @Composable() () -> Unit,
     footerContent: @Composable (() -> Unit)? = null
 ) {
-    val dividerColor = MaterialTheme.colors().onPrimary.copy(alpha = 0.05f)
-
     Column(
         modifier = LayoutHeight.Fill,
         arrangement = Arrangement.Top
     ) {
         if (headerContent != null) {
             headerContent()
-            Divider(color = dividerColor)
+            DrawerDivider()
         }
 
         bodyContent()
 
         if (footerContent != null) {
-            Divider(color = dividerColor)
+            DrawerDivider()
             footerContent()
         }
     }
 }
 
 @Composable
+fun DrawerDivider() {
+    val dividerColor = MaterialTheme.colors().onPrimary.copy(alpha = 0.05f)
+    Divider(color = dividerColor)
+}
+
+@Composable
 fun DrawerButton(
     modifier: Modifier = Modifier.None,
-    @DrawableRes icon: Int,
+    @DrawableRes icon: Int? = null,
     label: String,
     isSelected: Boolean,
     action: () -> Unit
@@ -64,12 +68,14 @@ fun DrawerButton(
     ) {
         TextButton(onClick = action, modifier = LayoutPadding(8.dp)) {
             Row(LayoutWidth.Fill, arrangement = Arrangement.Start) {
-                VectorImage(
-                    modifier = LayoutGravity.Center,
-                    id = icon,
-                    tint = textIconColor
-                )
-                Spacer(LayoutWidth(16.dp))
+                if (icon != null) {
+                    VectorImage(
+                        modifier = LayoutGravity.Center,
+                        id = icon,
+                        tint = textIconColor
+                    )
+                    Spacer(LayoutWidth(16.dp))
+                }
                 Text(
                     modifier = LayoutGravity.Center,
                     text = label,

@@ -89,7 +89,7 @@ fun ScheduleScreen(
         ActionBarItem(R.drawable.ic_refresh) { model.fetchSchedule() }
     )
 
-    onActive {
+    onCommit {
         model.fetchSchedule()
     }
 

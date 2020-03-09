@@ -17,7 +17,7 @@ import xyz.haehnel.bonjwa.ui.lightTheme
 @Composable
 fun EventItemCard(item: BonjwaEventItem) {
     Card(
-        color = (MaterialTheme.colors()).primaryVariant
+        color = MaterialTheme.colors().primaryVariant
     ) {
         Row(modifier = LayoutPadding(16.dp) + LayoutWidth.Fill) {
             Column {

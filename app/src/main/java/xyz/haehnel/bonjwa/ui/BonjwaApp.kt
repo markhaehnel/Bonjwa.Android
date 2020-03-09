@@ -62,7 +62,6 @@ fun BonjwaAppDrawer(
                 }
             }
         },
-
         bodyContent = {
             DrawerButton(
                 icon = R.drawable.ic_calendar,
@@ -80,6 +79,8 @@ fun BonjwaAppDrawer(
                 navigateTo(Screen.Events)
                 closeDrawer()
             }
+        },
+        footerContent = {
             DrawerButton(
                 icon = R.drawable.ic_settings,
                 label = stringResource(R.string.settings),
@@ -88,17 +89,12 @@ fun BonjwaAppDrawer(
                 navigateTo(Screen.Settings)
                 closeDrawer()
             }
-        },
 
-        footerContent = {
             DrawerInfo(
-                text =
-                """
-                    ${BuildConfig.APPLICATION_ID}
-                    ${BuildConfig.VERSION_NAME} (${BuildConfig.BUILD_TYPE})
-                    """.trimIndent(),
+                text = "Version ${BuildConfig.VERSION_NAME} (${BuildConfig.BUILD_TYPE})",
                 icon = R.drawable.ic_info
             )
         }
+
     )
 }

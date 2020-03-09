@@ -3,17 +3,11 @@ package xyz.haehnel.bonjwa.ui.schedule
 import androidx.compose.Composable
 import androidx.compose.MutableState
 import androidx.compose.state
-import androidx.ui.core.Text
-import androidx.ui.layout.Column
-import androidx.ui.layout.LayoutPadding
-import androidx.ui.layout.LayoutWidth
-import androidx.ui.material.MaterialTheme
-import androidx.ui.material.surface.Card
 import androidx.ui.res.stringResource
-import androidx.ui.unit.dp
 import org.threeten.bp.DateTimeUtils
 import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
+import xyz.haehnel.bonjwa.ui.common.MessageCard
 import java.util.*
 
 @Composable
@@ -44,19 +38,10 @@ fun ScheduleItemList(
         WeekdayColumn(weekdayItems)
 
     } else {
-        Column(
-            modifier = LayoutWidth.Fill
-        ) {
-            Card(
-                color = (MaterialTheme.colors()).primaryVariant,
-                modifier = LayoutWidth.Fill + LayoutPadding(16.dp)
-            ) {
-                if (schedule.isNullOrEmpty() && c.get(Calendar.DAY_OF_WEEK) == 2) {
-                    Text(stringResource(R.string.schedule_not_published))
-                } else {
-                    Text(stringResource(R.string.schedule_not_live))
-                }
-            }
+        if (schedule.isNullOrEmpty() && c.get(Calendar.DAY_OF_WEEK) == 2) {
+            MessageCard(stringResource(R.string.schedule_not_published), R.drawable.ic_no_schedule_published)
+        } else {
+            MessageCard(stringResource(R.string.schedule_not_live), R.drawable.ic_no_schedule_today)
         }
     }
 }

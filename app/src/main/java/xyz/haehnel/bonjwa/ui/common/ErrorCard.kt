@@ -28,7 +28,7 @@ fun ErrorCard(error: String, onRetry: (() -> Unit)? = null) {
 
             if (onRetry != null) {
                 Button(
-                    onClick = { onRetry },
+                    onClick = { onRetry() },
                     modifier = LayoutGravity.Center
                 ) {
                     Text(stringResource(R.string.retry))
