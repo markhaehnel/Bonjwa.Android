@@ -1,8 +1,8 @@
 # Bonjwa Sendeplan (Android App)
 
-[![CI Build Status](https://img.shields.io/github/workflow/status/markhaehnel/bonjwa-schedule-android/CI?style=for-the-badge)](https://github.com/markhaehnel/bonjwa-schedule-android/actions?query=workflow%3ACI)
-[![License](https://img.shields.io/github/license/markhaehnel/bonjwa-schedule-android?style=for-the-badge)](https://github.com/markhaehnel/bonjwa-schedule-android/blob/master/LICENSE)
-[![Latest release](https://img.shields.io/github/v/release/markhaehnel/bonjwa-schedule-android?include_prereleases&style=for-the-badge)](https://github.com/markhaehnel/bonjwa-schedule-android/releases)
+[![CI Build Status](https://img.shields.io/github/workflow/status/markhaehnel/Bonjwa.Android/CI?style=for-the-badge)](https://github.com/markhaehnel/Bonjwa.Android/actions?query=workflow%3ACI)
+[![License](https://img.shields.io/github/license/markhaehnel/Bonjwa.Android?style=for-the-badge)](https://github.com/markhaehnel/Bonjwa.Android/blob/master/LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/markhaehnel/Bonjwa.Android?include_prereleases&style=for-the-badge)](https://github.com/markhaehnel/Bonjwa.Android/releases)
 
 Check out the Bonjwa schedule on your smartphone!
 
