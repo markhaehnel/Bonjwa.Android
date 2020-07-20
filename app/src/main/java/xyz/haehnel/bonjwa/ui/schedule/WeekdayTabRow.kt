@@ -2,7 +2,7 @@ package xyz.haehnel.bonjwa.ui.schedule
 
 import androidx.compose.Composable
 import androidx.compose.MutableState
-import androidx.ui.core.Text
+import androidx.ui.foundation.Text
 import androidx.ui.material.Tab
 import androidx.ui.material.TabRow
 

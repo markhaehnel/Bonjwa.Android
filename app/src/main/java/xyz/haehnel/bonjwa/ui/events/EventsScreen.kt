@@ -1,11 +1,9 @@
 package xyz.haehnel.bonjwa.ui.events
 
-import androidx.compose.Composable
-import androidx.compose.Model
-import androidx.compose.onActive
-import androidx.compose.remember
+import androidx.compose.*
+import androidx.lifecycle.ViewModel
 import androidx.ui.animation.Crossfade
-import androidx.ui.core.Text
+import androidx.ui.foundation.Text
 import androidx.ui.material.DrawerState
 import androidx.ui.material.Scaffold
 import androidx.ui.material.ScaffoldState
@@ -24,6 +22,7 @@ import xyz.haehnel.bonjwa.ui.TopAppBarVectorButton
 import xyz.haehnel.bonjwa.ui.common.ActionBarItem
 import xyz.haehnel.bonjwa.ui.common.CircularLoadingIndicator
 import xyz.haehnel.bonjwa.ui.common.ErrorCard
+import kotlin.collections.setValue
 
 sealed class EventsScreenState {
     object Loading: EventsScreenState()
@@ -31,58 +30,53 @@ sealed class EventsScreenState {
     object Error: EventsScreenState()
 }
 
-@Model
-class EventsModel(
-    var screenState: EventsScreenState = EventsScreenState.Loading,
-    var events: MutableList<BonjwaEventItem> = mutableListOf(),
-    var error: String = ""
+@Composable
+fun EventsScreen(
+    navigateTo: (Screen) -> Unit,
+    scaffoldState: ScaffoldState = remember { ScaffoldState() }
 ) {
+    val screenState : MutableState<EventsScreenState> = state { EventsScreenState.Loading }
+    val events  = state { mutableListOf<BonjwaEventItem>() }
+    val error = state { "" }
 
-    fun fetchEvents() {
-        error = ""
-        screenState = EventsScreenState.Loading
+    val fetchEvents: () -> Unit = {
+        error.value = ""
+        screenState.value = EventsScreenState.Loading
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val retrievedEvents = ScheduleRepository.getEvents().await()
                 withContext(Dispatchers.Main) {
-                    events.clear()
-                    events.addAll(retrievedEvents)
-                    screenState = EventsScreenState.Complete
+                    events.value.clear()
+                    events.value.addAll(retrievedEvents)
+                    screenState.value = EventsScreenState.Complete
                 }
             } catch (ex: Exception) {
                 withContext(Dispatchers.Main) {
-                    error = "Fehler beim Laden der Events."
-                    screenState = EventsScreenState.Error
+                    error.value = "Fehler beim Laden der Events."
+                    screenState.value = EventsScreenState.Error
                 }
             }
         }
     }
-}
-
-@Composable
-fun EventsScreen(
-    scaffoldState: ScaffoldState = remember { ScaffoldState() },
-    eventsModel: EventsModel = EventsModel()
-) {
-    val model = remember { eventsModel }
 
     val actionData = listOf(
-        ActionBarItem(R.drawable.ic_refresh) { model.fetchEvents() }
+        ActionBarItem(R.drawable.ic_refresh) { fetchEvents() }
     )
 
     onActive {
-        model.fetchEvents()
+        fetchEvents()
     }
 
     Scaffold(
         scaffoldState = scaffoldState,
         drawerContent = {
             BonjwaAppDrawer(
+                navigateTo = navigateTo,
                 currentScreen = Screen.Events,
                 closeDrawer = { scaffoldState.drawerState = DrawerState.Closed }
             )
         },
-        topAppBar = {
+        topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.events)) },
                 navigationIcon = {
@@ -101,12 +95,12 @@ fun EventsScreen(
             )
         },
         bodyContent = {
-            Crossfade(model.screenState) { screenState ->
+            Crossfade(screenState.value) { screenState ->
                 when (screenState) {
                     is EventsScreenState.Loading -> CircularLoadingIndicator()
-                    is EventsScreenState.Complete -> EventItemList(model.events)
-                    is EventsScreenState.Error -> ErrorCard(model.error) {
-                        model.fetchEvents()
+                    is EventsScreenState.Complete -> EventItemList(events.value)
+                    is EventsScreenState.Error -> ErrorCard(error.value) {
+                        fetchEvents()
                     }
                 }
             }

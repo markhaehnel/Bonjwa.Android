@@ -2,11 +2,14 @@ package xyz.haehnel.bonjwa.ui
 
 import androidx.compose.Composable
 import androidx.ui.animation.Crossfade
-import androidx.ui.core.Text
+import androidx.ui.core.Modifier
+import androidx.ui.foundation.Icon
+import androidx.ui.foundation.Text
 import androidx.ui.layout.*
 import androidx.ui.material.MaterialTheme
-import androidx.ui.material.surface.Surface
+import androidx.ui.material.Surface
 import androidx.ui.res.stringResource
+import androidx.ui.res.vectorResource
 import androidx.ui.unit.dp
 import xyz.haehnel.bonjwa.BuildConfig
 import xyz.haehnel.bonjwa.R
@@ -18,20 +21,30 @@ import xyz.haehnel.bonjwa.ui.schedule.ScheduleScreen
 import xyz.haehnel.bonjwa.ui.settings.SettingsScreen
 
 @Composable
-fun BonjwaApp() {
+fun BonjwaApp(
+    navigationViewModel: NavigationViewModel
+) {
     MaterialTheme(colors = BonjwaStatus.appTheme) {
-        AppContent()
+        AppContent(navigationViewModel)
     }
 }
 
 @Composable
-private fun AppContent() {
-    Crossfade(BonjwaStatus.currentScreen) { screen ->
-        Surface(color = (MaterialTheme.colors()).background) {
+private fun AppContent(
+    navigationViewModel: NavigationViewModel
+) {
+    Crossfade(navigationViewModel.currentScreen) { screen ->
+        Surface(color = MaterialTheme.colors.background) {
             when (screen) {
-                is Screen.Schedule -> ScheduleScreen()
-                is Screen.Events -> EventsScreen()
-                is Screen.Settings -> SettingsScreen()
+                is Screen.Schedule -> ScheduleScreen(
+                    navigateTo = navigationViewModel::navigateTo
+                )
+                is Screen.Events -> EventsScreen(
+                    navigateTo = navigationViewModel::navigateTo
+                )
+                is Screen.Settings -> SettingsScreen(
+                    navigateTo = navigationViewModel::navigateTo
+                )
             }
         }
     }
@@ -39,25 +52,25 @@ private fun AppContent() {
 
 @Composable
 fun BonjwaAppDrawer(
+    navigateTo: (Screen) -> Unit,
     currentScreen: Screen,
     closeDrawer: () -> Unit
 ) {
     AppDrawer(
         headerContent = {
-            Row(modifier = LayoutPadding(top = 24.dp, bottom = 24.dp, start = 16.dp, end = 16.dp)) {
-                VectorImage(id = R.drawable.ic_logo, tint = (MaterialTheme.colors()).onBackground)
-                Spacer(LayoutWidth(16.dp))
+            Row(modifier = Modifier.padding(top = 24.dp, bottom = 24.dp, start = 16.dp, end = 16.dp)) {
+                Icon(vectorResource(id = R.drawable.ic_logo), tint = MaterialTheme.colors.onBackground)
+                Spacer(Modifier.width(16.dp))
                 Column {
                     Text(
-                        "${stringResource(R.string.app_name)} ${stringResource(R.string.schedule)}",
-                        style = (MaterialTheme.typography()).h6
+                        text = "${stringResource(R.string.app_name)} ${stringResource(R.string.schedule)}",
+                        style = MaterialTheme.typography.h6
                     )
                     Text(
                         stringResource(R.string.app_description),
-                        style = (MaterialTheme.typography()).subtitle1.copy(
-                            color = (MaterialTheme.colors()).onPrimary.copy(alpha = 0.6f)
+                        style = MaterialTheme.typography.subtitle1.copy(
+                            color = MaterialTheme.colors.onPrimary.copy(alpha = 0.6f)
                         )
-
                     )
                 }
             }

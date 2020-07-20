@@ -2,15 +2,17 @@ package xyz.haehnel.bonjwa.ui.common
 
 import androidx.annotation.DrawableRes
 import androidx.compose.Composable
+import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
-import androidx.ui.core.Text
+import androidx.ui.foundation.Icon
+import androidx.ui.foundation.Text
 import androidx.ui.layout.*
 import androidx.ui.material.Divider
 import androidx.ui.material.MaterialTheme
+import androidx.ui.material.Surface
 import androidx.ui.material.TextButton
-import androidx.ui.material.surface.Surface
+import androidx.ui.res.vectorResource
 import androidx.ui.unit.dp
-import xyz.haehnel.bonjwa.ui.VectorImage
 
 @Composable
 fun AppDrawer(
@@ -19,8 +21,8 @@ fun AppDrawer(
     footerContent: @Composable (() -> Unit)? = null
 ) {
     Column(
-        modifier = LayoutHeight.Fill,
-        arrangement = Arrangement.Top
+        modifier = Modifier.fillMaxHeight(),
+        verticalArrangement = Arrangement.Top
     ) {
         if (headerContent != null) {
             headerContent()
@@ -38,19 +40,19 @@ fun AppDrawer(
 
 @Composable
 fun DrawerDivider() {
-    val dividerColor = MaterialTheme.colors().onPrimary.copy(alpha = 0.05f)
+    val dividerColor = MaterialTheme.colors.onPrimary.copy(alpha = 0.05f)
     Divider(color = dividerColor)
 }
 
 @Composable
 fun DrawerButton(
-    modifier: Modifier = Modifier.None,
+    modifier: Modifier = Modifier,
     @DrawableRes icon: Int? = null,
     label: String,
     isSelected: Boolean,
     action: () -> Unit
 ) {
-    val colors = MaterialTheme.colors()
+    val colors = MaterialTheme.colors
     val textIconColor = if (isSelected) {
         colors.onPrimary
     } else {
@@ -66,20 +68,20 @@ fun DrawerButton(
         modifier = modifier,
         color = backgroundColor
     ) {
-        TextButton(onClick = action, modifier = LayoutPadding(8.dp)) {
-            Row(LayoutWidth.Fill, arrangement = Arrangement.Start) {
+        TextButton(onClick = action, modifier = Modifier.padding(8.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
                 if (icon != null) {
-                    VectorImage(
-                        modifier = LayoutGravity.Center,
-                        id = icon,
+                    Icon(
+                        modifier = Modifier.gravity(Alignment.CenterVertically),
+                        asset = vectorResource(id = icon),
                         tint = textIconColor
                     )
-                    Spacer(LayoutWidth(16.dp))
+                    Spacer(Modifier.width(16.dp))
                 }
                 Text(
-                    modifier = LayoutGravity.Center,
+                    modifier = Modifier.gravity(Alignment.CenterVertically),
                     text = label,
-                    style = (MaterialTheme.typography()).body1.copy(
+                    style = MaterialTheme.typography.body1.copy(
                         color = textIconColor
                     )
                 )
@@ -90,30 +92,30 @@ fun DrawerButton(
 
 @Composable
 fun DrawerInfo(
-    modifier: Modifier = Modifier.None,
+    modifier: Modifier = Modifier,
     @DrawableRes icon: Int? = null,
     text: String,
-    action: (() -> Unit)? = null
+    action: () -> Unit = { }
 ) {
-    val color = (MaterialTheme.colors()).onPrimary.copy(0.6f)
+    val color = MaterialTheme.colors.onPrimary.copy(0.6f)
 
     Surface(
         modifier = modifier
     ) {
-        TextButton(onClick = action, modifier = LayoutPadding(start = 8.dp, top = 4.dp, end = 8.dp, bottom = 4.dp)) {
-            Row(LayoutWidth.Fill, arrangement = Arrangement.Start) {
+        TextButton(onClick = action, modifier = Modifier.padding(start = 8.dp, top = 4.dp, end = 8.dp, bottom = 4.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
                 if (icon != null) {
-                    VectorImage(
-                        modifier = LayoutGravity.Center,
-                        id = icon,
+                    Icon(
+                        modifier = Modifier.gravity(Alignment.CenterVertically),
+                        asset = vectorResource(id = icon),
                         tint = color
                     )
-                    Spacer(LayoutWidth(16.dp))
+                    Spacer(Modifier.width(16.dp))
                 }
                 Text(
-                    modifier = LayoutGravity.Center,
+                    modifier = Modifier.gravity(Alignment.CenterVertically),
                     text = text,
-                    style = (MaterialTheme.typography()).subtitle2.copy(
+                    style = MaterialTheme.typography.subtitle2.copy(
                         color = color
                     )
                 )

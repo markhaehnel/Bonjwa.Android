@@ -1,10 +1,12 @@
 package xyz.haehnel.bonjwa.ui.schedule
 
 import androidx.compose.Composable
-import androidx.ui.core.Text
+import androidx.ui.core.Alignment
+import androidx.ui.core.Modifier
+import androidx.ui.foundation.Text
 import androidx.ui.layout.*
+import androidx.ui.material.Card
 import androidx.ui.material.MaterialTheme
-import androidx.ui.material.surface.Card
 import androidx.ui.text.style.TextAlign
 import androidx.ui.text.style.TextOverflow
 import androidx.ui.tooling.preview.Preview
@@ -32,31 +34,33 @@ fun ScheduleItemCard(item: BonjwaScheduleItem) {
 
     Card(
         color = when {
-            item.cancelled -> (MaterialTheme.colors()).error
-            item.isRunning -> (MaterialTheme.colors()).secondaryVariant
-            else -> (MaterialTheme.colors()).primaryVariant
+            item.cancelled -> MaterialTheme.colors.error
+            item.isRunning -> MaterialTheme.colors.secondaryVariant
+            else -> MaterialTheme.colors.primaryVariant
         },
-        modifier = LayoutWidth.Fill
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Row(modifier = LayoutPadding(16.dp)) {
+        Row(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "$startText\n—\n$endText",
-                style = (MaterialTheme.typography()).subtitle2.copy(textAlign = TextAlign.Center),
-                modifier = LayoutPadding(end = 16.dp) + LayoutWidth(40.dp) + LayoutGravity.Center
+                style = MaterialTheme.typography.subtitle2.copy(textAlign = TextAlign.Center),
+                modifier = Modifier.padding(end = 16.dp) +
+                        Modifier.width(40.dp) +
+                        Modifier.gravity(Alignment.CenterVertically)
             )
             Column(
-                modifier = LayoutPadding(end = 16.dp)
+                modifier = Modifier.padding(end = 16.dp)
             ) {
                 Text(
                     text = item.title,
-                    style = (MaterialTheme.typography()).h6,
+                    style = MaterialTheme.typography.h6,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 if (!item.caster.isBlank()) {
                     Text(
                         text = item.caster,
-                        style = (MaterialTheme.typography()).subtitle1,
+                        style = MaterialTheme.typography.subtitle1,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )

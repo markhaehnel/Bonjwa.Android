@@ -1,11 +1,13 @@
 package xyz.haehnel.bonjwa.ui.common
 
 import androidx.compose.Composable
-import androidx.ui.core.Text
+import androidx.ui.core.Alignment
+import androidx.ui.core.Modifier
+import androidx.ui.foundation.Text
 import androidx.ui.layout.*
 import androidx.ui.material.Button
+import androidx.ui.material.Card
 import androidx.ui.material.MaterialTheme
-import androidx.ui.material.surface.Card
 import androidx.ui.res.stringResource
 import androidx.ui.tooling.preview.Preview
 import androidx.ui.unit.dp
@@ -17,19 +19,20 @@ import xyz.haehnel.bonjwa.ui.lightTheme
 fun ErrorCard(error: String, onRetry: (() -> Unit)? = null) {
     Card(
         elevation = 4.dp,
-        color = MaterialTheme.colors().error,
-        modifier = LayoutWidth.Fill
+        color = MaterialTheme.colors.error,
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(
-            modifier = LayoutPadding(16.dp) + LayoutAlign.Center
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.Center
         ) {
             Text(text = error)
-            Spacer(LayoutHeight(height = 8.dp))
+            Spacer(Modifier.height(height = 8.dp))
 
             if (onRetry != null) {
                 Button(
                     onClick = { onRetry() },
-                    modifier = LayoutGravity.Center
+                    modifier = Modifier.gravity(Alignment.CenterHorizontally)
                 ) {
                     Text(stringResource(R.string.retry))
                 }

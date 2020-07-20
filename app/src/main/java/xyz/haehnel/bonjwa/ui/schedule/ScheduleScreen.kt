@@ -5,26 +5,31 @@ import android.net.Uri
 import androidx.compose.*
 import androidx.ui.animation.Crossfade
 import androidx.ui.core.ContextAmbient
-import androidx.ui.core.TestTag
-import androidx.ui.core.Text
+import androidx.ui.core.Modifier
+import androidx.ui.core.testTag
+import androidx.ui.foundation.Icon
+import androidx.ui.foundation.Text
 import androidx.ui.layout.Column
 import androidx.ui.material.*
 import androidx.ui.res.stringResource
+import androidx.ui.res.vectorResource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import xyz.haehnel.bonjwa.R
+import xyz.haehnel.bonjwa.model.BonjwaEventItem
 import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
 import xyz.haehnel.bonjwa.repo.ScheduleRepository
 import xyz.haehnel.bonjwa.ui.BonjwaAppDrawer
 import xyz.haehnel.bonjwa.ui.Screen
 import xyz.haehnel.bonjwa.ui.TopAppBarVectorButton
-import xyz.haehnel.bonjwa.ui.VectorImage
 import xyz.haehnel.bonjwa.ui.common.ActionBarItem
 import xyz.haehnel.bonjwa.ui.common.CircularLoadingIndicator
 import xyz.haehnel.bonjwa.ui.common.ErrorCard
+import xyz.haehnel.bonjwa.ui.events.EventsScreenState
 import java.util.*
+import kotlin.reflect.KFunction1
 
 val weekdays =
     mapOf(
@@ -45,39 +50,35 @@ sealed class ScheduleScreenState {
     object Error : ScheduleScreenState()
 }
 
-@Model
-class ScheduleModel(
-    var screenState: ScheduleScreenState = ScheduleScreenState.Loading,
-    var schedule: MutableList<BonjwaScheduleItem> = mutableListOf(),
-    var error: String = ""
+@Composable
+fun ScheduleScreen(
+    navigateTo: (Screen) -> Unit,
+    scaffoldState: ScaffoldState = remember { ScaffoldState() }
 ) {
+    val screenState : MutableState<ScheduleScreenState> = state { ScheduleScreenState.Loading }
+    val schedule  = state { mutableListOf<BonjwaScheduleItem>() }
+    val error = state { "" }
 
-    fun fetchSchedule() {
-        error = ""
-        screenState = ScheduleScreenState.Loading
+    val fetchSchedule : () -> Unit = {
+        error.value = ""
+        screenState.value = ScheduleScreenState.Loading
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val retrievedSchedule = ScheduleRepository.getSchedule().await()
                 withContext(Dispatchers.Main) {
-                    schedule.clear()
-                    schedule.addAll(retrievedSchedule)
-                    screenState = ScheduleScreenState.Complete
+                    schedule.value.clear()
+                    schedule.value.addAll(retrievedSchedule)
+                    screenState.value = ScheduleScreenState.Complete
                 }
             } catch (ex: Exception) {
                 withContext(Dispatchers.Main) {
-                    error = "Fehler beim Laden des Sendeplans."
-                    screenState = ScheduleScreenState.Error
+                    error.value = "Fehler beim Laden des Sendeplans."
+                    screenState.value = ScheduleScreenState.Error
                 }
             }
         }
     }
-}
 
-@Composable
-fun ScheduleScreen(
-    scaffoldState: ScaffoldState = remember { ScaffoldState() },
-    model: ScheduleModel = remember { ScheduleModel() }
-) {
     val selectedTabIndex = state { 0 }
 
     val actionData = listOf(
@@ -86,30 +87,30 @@ fun ScheduleScreen(
             selectedTabIndex.value =
                 weekdays.toList().indexOfFirst { it.first == c.get(Calendar.DAY_OF_WEEK) }
         },
-        ActionBarItem(R.drawable.ic_refresh) { model.fetchSchedule() }
+        ActionBarItem(R.drawable.ic_refresh) { fetchSchedule() }
     )
 
     onCommit {
-        model.fetchSchedule()
+        fetchSchedule()
     }
 
     Scaffold(
         scaffoldState = scaffoldState,
         drawerContent = {
             BonjwaAppDrawer(
+                navigateTo = navigateTo,
                 currentScreen = Screen.Schedule,
                 closeDrawer = { scaffoldState.drawerState = DrawerState.Closed }
             )
         },
-        topAppBar = {
+        topBar = {
             Column {
                 TopAppBar(
                     title = {
-                        TestTag("APP_TITLE") {
-                            Text(
-                                "${stringResource(R.string.app_name)} ${stringResource(R.string.schedule)}"
-                            )
-                        }
+                        Text(
+                            modifier = Modifier.testTag("APP_TITLE"),
+                            text = "${stringResource(R.string.app_name)} ${stringResource(R.string.schedule)}"
+                        )
                     },
                     navigationIcon = {
                         TopAppBarVectorButton(
@@ -133,18 +134,18 @@ fun ScheduleScreen(
 
         },
         bodyContent = {
-            Crossfade(model.screenState) { screenState ->
+            Crossfade(screenState.value) { screenState ->
                 when (screenState) {
                     is ScheduleScreenState.Loading -> CircularLoadingIndicator()
-                    is ScheduleScreenState.Complete -> ScheduleItemList(model.schedule, selectedTabIndex)
-                    is ScheduleScreenState.Error -> ErrorCard(model.error) {
-                        model.fetchSchedule()
+                    is ScheduleScreenState.Complete -> ScheduleItemList(schedule.value, selectedTabIndex)
+                    is ScheduleScreenState.Error -> ErrorCard(error.value) {
+                        fetchSchedule()
                     }
                 }
             }
         },
         floatingActionButton = {
-            if (model.schedule.any { it.isRunning }) {
+            if (schedule.value.any { it.isRunning }) {
                 val context = ContextAmbient.current
                 FloatingActionButton(
                     onClick = {
@@ -152,10 +153,10 @@ fun ScheduleScreen(
                         intent.data = BONJWA_CHANNEL_URL
                         context.startActivity(intent)
                     },
-                    color = MaterialTheme.colors().secondary
+                    backgroundColor = MaterialTheme.colors.secondary
                 ) {
-                    VectorImage(
-                        id = R.drawable.ic_play
+                    Icon(
+                        asset = vectorResource(id = R.drawable.ic_play)
                     )
                 }
             }

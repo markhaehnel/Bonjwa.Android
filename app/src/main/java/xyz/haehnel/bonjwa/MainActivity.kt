@@ -2,6 +2,7 @@ package xyz.haehnel.bonjwa
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import androidx.ui.core.setContent
@@ -9,11 +10,13 @@ import com.jakewharton.threetenabp.AndroidThreeTen
 import xyz.haehnel.bonjwa.model.SETTINGS
 import xyz.haehnel.bonjwa.ui.BonjwaApp
 import xyz.haehnel.bonjwa.ui.BonjwaStatus
+import xyz.haehnel.bonjwa.ui.NavigationViewModel
 import xyz.haehnel.bonjwa.ui.themeList
 
 class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private lateinit var sharedPrefs: SharedPreferences
+    val navigationViewModel by viewModels<NavigationViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +26,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         setContent {
-                BonjwaApp()
+            BonjwaApp(navigationViewModel)
         }
     }
 

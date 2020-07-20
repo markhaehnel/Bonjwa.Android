@@ -1,9 +1,10 @@
 package xyz.haehnel.bonjwa.ui.events
 
 import androidx.compose.Composable
+import androidx.ui.core.Modifier
 import androidx.ui.foundation.VerticalScroller
 import androidx.ui.layout.Column
-import androidx.ui.layout.LayoutWidth
+import androidx.ui.layout.fillMaxWidth
 import androidx.ui.material.Divider
 import androidx.ui.res.stringResource
 import xyz.haehnel.bonjwa.R
@@ -15,7 +16,7 @@ fun EventItemList(events: List<BonjwaEventItem>) {
     if (!events.isNullOrEmpty()) {
         VerticalScroller {
             Column(
-                modifier = LayoutWidth.Fill
+                modifier = Modifier.fillMaxWidth()
             ) {
                 for (item in events) {
                     EventItemCard(item)
