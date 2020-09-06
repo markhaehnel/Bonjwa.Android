@@ -2,34 +2,27 @@ package xyz.haehnel.bonjwa.ui.schedule
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.*
-import androidx.ui.animation.Crossfade
-import androidx.ui.core.ContextAmbient
-import androidx.ui.core.Modifier
-import androidx.ui.core.testTag
-import androidx.ui.foundation.Icon
-import androidx.ui.foundation.Text
-import androidx.ui.layout.Column
-import androidx.ui.material.*
-import androidx.ui.res.stringResource
-import androidx.ui.res.vectorResource
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.ContextAmbient
+import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import xyz.haehnel.bonjwa.R
-import xyz.haehnel.bonjwa.model.BonjwaEventItem
 import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
 import xyz.haehnel.bonjwa.repo.ScheduleRepository
-import xyz.haehnel.bonjwa.ui.BonjwaAppDrawer
-import xyz.haehnel.bonjwa.ui.Screen
-import xyz.haehnel.bonjwa.ui.TopAppBarVectorButton
+import xyz.haehnel.bonjwa.ui.BonjwaAppViewModel
 import xyz.haehnel.bonjwa.ui.common.ActionBarItem
 import xyz.haehnel.bonjwa.ui.common.CircularLoadingIndicator
 import xyz.haehnel.bonjwa.ui.common.ErrorCard
-import xyz.haehnel.bonjwa.ui.events.EventsScreenState
 import java.util.*
-import kotlin.reflect.KFunction1
 
 val weekdays =
     mapOf(
@@ -42,7 +35,7 @@ val weekdays =
         1 to "Sonntag"
     )
 
-val BONJWA_CHANNEL_URL : Uri = Uri.parse("https://twitch.tv/bonjwa")
+val BONJWA_CHANNEL_URL: Uri = Uri.parse("https://twitch.tv/bonjwa")
 
 sealed class ScheduleScreenState {
     object Loading : ScheduleScreenState()
@@ -52,22 +45,24 @@ sealed class ScheduleScreenState {
 
 @Composable
 fun ScheduleScreen(
-    navigateTo: (Screen) -> Unit,
-    scaffoldState: ScaffoldState = remember { ScaffoldState() }
+    appViewModel: BonjwaAppViewModel
 ) {
-    val screenState : MutableState<ScheduleScreenState> = state { ScheduleScreenState.Loading }
-    val schedule  = state { mutableListOf<BonjwaScheduleItem>() }
-    val error = state { "" }
+    val screenState: MutableState<ScheduleScreenState> =
+        remember { mutableStateOf(ScheduleScreenState.Loading) }
+    val schedule = remember { mutableStateOf(mutableListOf<BonjwaScheduleItem>()) }
+    val error = remember { mutableStateOf("") }
+    val isAnyRunning = remember { mutableStateOf(false) }
 
-    val fetchSchedule : () -> Unit = {
+    val fetchSchedule: () -> Unit = {
         error.value = ""
         screenState.value = ScheduleScreenState.Loading
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val retrievedSchedule = ScheduleRepository.getSchedule().await()
+                val retrievedSchedule = ScheduleRepository.getSchedule()
                 withContext(Dispatchers.Main) {
                     schedule.value.clear()
                     schedule.value.addAll(retrievedSchedule)
+                    isAnyRunning.value = retrievedSchedule.any { it.isRunning }
                     screenState.value = ScheduleScreenState.Complete
                 }
             } catch (ex: Exception) {
@@ -79,87 +74,48 @@ fun ScheduleScreen(
         }
     }
 
-    val selectedTabIndex = state { 0 }
+    val selectedTabIndex = remember { mutableStateOf(0) }
 
+    val screenTitle = "${stringResource(R.string.app_name)} ${stringResource(R.string.schedule)}"
     val actionData = listOf(
-        ActionBarItem(R.drawable.ic_calendar_today) {
+        ActionBarItem(Icons.Filled.DateRange) {
             val c = Calendar.getInstance()
             selectedTabIndex.value =
                 weekdays.toList().indexOfFirst { it.first == c.get(Calendar.DAY_OF_WEEK) }
         },
-        ActionBarItem(R.drawable.ic_refresh) { fetchSchedule() }
+        ActionBarItem(Icons.Filled.Refresh) { fetchSchedule() }
     )
+    val context = ContextAmbient.current
+    val playStreamActionBarItem = ActionBarItem(Icons.Filled.PlayArrow) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = BONJWA_CHANNEL_URL
+        context.startActivity(intent)
+    }
 
-    onCommit {
+    onActive {
         fetchSchedule()
     }
 
-    Scaffold(
-        scaffoldState = scaffoldState,
-        drawerContent = {
-            BonjwaAppDrawer(
-                navigateTo = navigateTo,
-                currentScreen = Screen.Schedule,
-                closeDrawer = { scaffoldState.drawerState = DrawerState.Closed }
-            )
-        },
-        topBar = {
-            Column {
-                TopAppBar(
-                    title = {
-                        Text(
-                            modifier = Modifier.testTag("APP_TITLE"),
-                            text = "${stringResource(R.string.app_name)} ${stringResource(R.string.schedule)}"
-                        )
-                    },
-                    navigationIcon = {
-                        TopAppBarVectorButton(
-                            id = R.drawable.ic_hamburger,
-                            onClick = {
-                                scaffoldState.drawerState = DrawerState.Opened
-                            }
-                        )
-                    },
-                    actions = {
-                        actionData.forEach {
-                            TopAppBarVectorButton(
-                                id = it.vectorResource,
-                                onClick = { it.action() }
-                            )
-                        }
-                    }
-                )
-                WeekdayTabRow(weekdays, selectedTabIndex)
-            }
+    onCommit {
+        val fabItem = if (isAnyRunning.value) playStreamActionBarItem else null
+        appViewModel.setTopBar(screenTitle, actionData, fabItem)
+    }
 
-        },
-        bodyContent = {
-            Crossfade(screenState.value) { screenState ->
-                when (screenState) {
-                    is ScheduleScreenState.Loading -> CircularLoadingIndicator()
-                    is ScheduleScreenState.Complete -> ScheduleItemList(schedule.value, selectedTabIndex)
-                    is ScheduleScreenState.Error -> ErrorCard(error.value) {
-                        fetchSchedule()
-                    }
-                }
-            }
-        },
-        floatingActionButton = {
-            if (schedule.value.any { it.isRunning }) {
-                val context = ContextAmbient.current
-                FloatingActionButton(
-                    onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW)
-                        intent.data = BONJWA_CHANNEL_URL
-                        context.startActivity(intent)
-                    },
-                    backgroundColor = MaterialTheme.colors.secondary
-                ) {
-                    Icon(
-                        asset = vectorResource(id = R.drawable.ic_play)
-                    )
+
+
+    Column {
+        WeekdayTabRow(weekdays, selectedTabIndex)
+        Crossfade(screenState.value) { state ->
+            when (state) {
+                is ScheduleScreenState.Loading -> CircularLoadingIndicator()
+                is ScheduleScreenState.Complete -> ScheduleItemList(
+                    schedule.value,
+                    selectedTabIndex
+                )
+                is ScheduleScreenState.Error -> ErrorCard(error.value) {
+                    fetchSchedule()
                 }
             }
         }
-    )
+    }
 }

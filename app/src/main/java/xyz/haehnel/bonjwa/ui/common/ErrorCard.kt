@@ -1,16 +1,16 @@
 package xyz.haehnel.bonjwa.ui.common
 
-import androidx.compose.Composable
-import androidx.ui.core.Alignment
-import androidx.ui.core.Modifier
-import androidx.ui.foundation.Text
-import androidx.ui.layout.*
-import androidx.ui.material.Button
-import androidx.ui.material.Card
-import androidx.ui.material.MaterialTheme
-import androidx.ui.res.stringResource
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
-import androidx.ui.unit.dp
 import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.ui.darkTheme
 import xyz.haehnel.bonjwa.ui.lightTheme
@@ -19,7 +19,7 @@ import xyz.haehnel.bonjwa.ui.lightTheme
 fun ErrorCard(error: String, onRetry: (() -> Unit)? = null) {
     Card(
         elevation = 4.dp,
-        color = MaterialTheme.colors.error,
+        backgroundColor = MaterialTheme.colors.error,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(

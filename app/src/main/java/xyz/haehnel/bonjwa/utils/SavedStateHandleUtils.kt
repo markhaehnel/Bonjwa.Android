@@ -1,8 +1,8 @@
 package xyz.haehnel.bonjwa.utils
 
 import android.os.Bundle
-import androidx.compose.MutableState
-import androidx.compose.mutableStateOf
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 
 /**
@@ -21,7 +21,11 @@ fun <T> SavedStateHandle.getMutableStateOf(
     restore: (Bundle) -> T
 ): MutableState<T> {
     val bundle: Bundle? = get(key)
-    val initial = if (bundle == null) { default } else { restore(bundle) }
+    val initial = if (bundle == null) {
+        default
+    } else {
+        restore(bundle)
+    }
     val state = mutableStateOf(initial)
     setSavedStateProvider(key) {
         save(state.value)

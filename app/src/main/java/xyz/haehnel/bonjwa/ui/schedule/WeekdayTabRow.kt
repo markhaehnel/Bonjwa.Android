@@ -1,28 +1,28 @@
 package xyz.haehnel.bonjwa.ui.schedule
 
-import androidx.compose.Composable
-import androidx.compose.MutableState
-import androidx.ui.foundation.Text
-import androidx.ui.material.Tab
-import androidx.ui.material.TabRow
+import androidx.compose.foundation.Text
+import androidx.compose.material.ScrollableTabRow
+import androidx.compose.material.Tab
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 
 @Composable
 fun WeekdayTabRow(
     items: Map<Int, String>,
     selectedIndex: MutableState<Int>
 ) {
-    TabRow(
-        items = items.values.toList(),
-        selectedIndex = selectedIndex.value,
-        scrollable = true
-    ) { index, text ->
+    ScrollableTabRow(
+        selectedTabIndex = selectedIndex.value,
+    ) {
+        items.entries.forEachIndexed { index, title ->
+            Tab(
+                text = { Text(text = title.value) },
+                selected = selectedIndex.value == index,
+                onClick = {
+                    selectedIndex.value = index
+                }
+            )
+        }
 
-        Tab(
-            text = { Text(text) },
-            selected = selectedIndex.value == index,
-            onSelected = {
-                selectedIndex.value = index
-            }
-        )
     }
 }

@@ -1,113 +1,108 @@
 package xyz.haehnel.bonjwa.ui
 
-import androidx.compose.Composable
-import androidx.ui.animation.Crossfade
-import androidx.ui.core.Modifier
-import androidx.ui.foundation.Icon
-import androidx.ui.foundation.Text
-import androidx.ui.layout.*
-import androidx.ui.material.MaterialTheme
-import androidx.ui.material.Surface
-import androidx.ui.res.stringResource
-import androidx.ui.res.vectorResource
-import androidx.ui.unit.dp
-import xyz.haehnel.bonjwa.BuildConfig
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.Icon
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import xyz.haehnel.bonjwa.R
-import xyz.haehnel.bonjwa.ui.common.AppDrawer
-import xyz.haehnel.bonjwa.ui.common.DrawerButton
-import xyz.haehnel.bonjwa.ui.common.DrawerInfo
 import xyz.haehnel.bonjwa.ui.events.EventsScreen
 import xyz.haehnel.bonjwa.ui.schedule.ScheduleScreen
 import xyz.haehnel.bonjwa.ui.settings.SettingsScreen
 
+
 @Composable
 fun BonjwaApp(
-    navigationViewModel: NavigationViewModel
+    appViewModel: BonjwaAppViewModel
 ) {
-    MaterialTheme(colors = BonjwaStatus.appTheme) {
-        AppContent(navigationViewModel)
-    }
-}
 
-@Composable
-private fun AppContent(
-    navigationViewModel: NavigationViewModel
-) {
-    Crossfade(navigationViewModel.currentScreen) { screen ->
-        Surface(color = MaterialTheme.colors.background) {
-            when (screen) {
-                is Screen.Schedule -> ScheduleScreen(
-                    navigateTo = navigationViewModel::navigateTo
-                )
-                is Screen.Events -> EventsScreen(
-                    navigateTo = navigationViewModel::navigateTo
-                )
-                is Screen.Settings -> SettingsScreen(
-                    navigateTo = navigationViewModel::navigateTo
-                )
-            }
-        }
-    }
-}
+    val scaffoldState = rememberScaffoldState()
 
-@Composable
-fun BonjwaAppDrawer(
-    navigateTo: (Screen) -> Unit,
-    currentScreen: Screen,
-    closeDrawer: () -> Unit
-) {
-    AppDrawer(
-        headerContent = {
-            Row(modifier = Modifier.padding(top = 24.dp, bottom = 24.dp, start = 16.dp, end = 16.dp)) {
-                Icon(vectorResource(id = R.drawable.ic_logo), tint = MaterialTheme.colors.onBackground)
-                Spacer(Modifier.width(16.dp))
+    MaterialTheme(colors = themeList[appViewModel.appThemeIndex.value]) {
+
+        Scaffold(
+            scaffoldState = scaffoldState,
+            topBar = {
                 Column {
-                    Text(
-                        text = "${stringResource(R.string.app_name)} ${stringResource(R.string.schedule)}",
-                        style = MaterialTheme.typography.h6
-                    )
-                    Text(
-                        stringResource(R.string.app_description),
-                        style = MaterialTheme.typography.subtitle1.copy(
-                            color = MaterialTheme.colors.onPrimary.copy(alpha = 0.6f)
-                        )
+                    TopAppBar(
+                        title = {
+                            Text(
+                                modifier = Modifier.testTag("APP_TITLE"),
+                                text = appViewModel.topBarTitle.value
+                            )
+                        },
+                        actions = {
+                            appViewModel.topBarActions.forEach {
+                                IconButton(onClick = { it.action() }) {
+                                    Icon(it.icon)
+                                }
+                            }
+                        }
                     )
                 }
-            }
-        },
-        bodyContent = {
-            DrawerButton(
-                icon = R.drawable.ic_calendar,
-                label = stringResource(R.string.schedule),
-                isSelected = currentScreen == Screen.Schedule
-            ) {
-                navigateTo(Screen.Schedule)
-                closeDrawer()
-            }
-            DrawerButton(
-                icon = R.drawable.ic_events,
-                label = stringResource(R.string.events),
-                isSelected = currentScreen == Screen.Events
-            ) {
-                navigateTo(Screen.Events)
-                closeDrawer()
-            }
-        },
-        footerContent = {
-            DrawerButton(
-                icon = R.drawable.ic_settings,
-                label = stringResource(R.string.settings),
-                isSelected = currentScreen == Screen.Settings
-            ) {
-                navigateTo(Screen.Settings)
-                closeDrawer()
-            }
 
-            DrawerInfo(
-                text = "Version ${BuildConfig.VERSION_NAME} (${BuildConfig.BUILD_TYPE})",
-                icon = R.drawable.ic_info
-            )
-        }
+            },
+            bodyContent = {
+                Crossfade(appViewModel.currentScreen) { screen ->
+                    Surface(color = MaterialTheme.colors.background) {
+                        when (screen.value) {
+                            is Screen.Schedule -> ScheduleScreen(appViewModel)
+                            is Screen.Events -> EventsScreen(appViewModel)
+                            is Screen.Settings -> SettingsScreen(appViewModel)
+                        }
+                    }
+                }
+            },
+            bottomBar = {
+                var selectedItem by remember { mutableStateOf(0) }
+                val items = listOf(
+                    Triple(
+                        Screen.Schedule,
+                        stringResource(R.string.schedule),
+                        Icons.Filled.DateRange
+                    ),
+                    Triple(
+                        Screen.Events,
+                        stringResource(R.string.events),
+                        Icons.Filled.Notifications
+                    ),
+                    Triple(
+                        Screen.Settings,
+                        stringResource(R.string.settings),
+                        Icons.Filled.Settings
+                    ),
+                )
 
-    )
+                BottomNavigation {
+                    items.forEachIndexed { index, item ->
+                        BottomNavigationItem(
+                            icon = { Icon(item.third) },
+                            label = { Text(item.second) },
+                            selected = selectedItem == index,
+                            onSelect = {
+                                selectedItem = index
+                                appViewModel.setCurrentScreen(item.first)
+                            }
+                        )
+                    }
+                }
+            },
+            floatingActionButton = {
+                if (appViewModel.fabAction.value != null) {
+                    FloatingActionButton(onClick = appViewModel.fabAction.value!!.action) {
+                        Icon(appViewModel.fabAction.value!!.icon)
+                    }
+                }
+            }
+        )
+    }
 }
+

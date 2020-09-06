@@ -1,16 +1,16 @@
 package xyz.haehnel.bonjwa.ui.schedule
 
-import androidx.compose.Composable
-import androidx.ui.core.Alignment
-import androidx.ui.core.Modifier
-import androidx.ui.foundation.Text
-import androidx.ui.layout.*
-import androidx.ui.material.Card
-import androidx.ui.material.MaterialTheme
-import androidx.ui.text.style.TextAlign
-import androidx.ui.text.style.TextOverflow
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
-import androidx.ui.unit.dp
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneOffset
 import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
@@ -33,30 +33,32 @@ fun ScheduleItemCard(item: BonjwaScheduleItem) {
         .toString()
 
     Card(
-        color = when {
+        backgroundColor = when {
             item.cancelled -> MaterialTheme.colors.error
             item.isRunning -> MaterialTheme.colors.secondaryVariant
             else -> MaterialTheme.colors.primaryVariant
         },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large
     ) {
-        Row(modifier = Modifier.padding(16.dp)) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+        ) {
             Text(
                 text = "$startText\n—\n$endText",
                 style = MaterialTheme.typography.subtitle2.copy(textAlign = TextAlign.Center),
-                modifier = Modifier.padding(end = 16.dp) +
-                        Modifier.width(40.dp) +
+                modifier = Modifier.padding(end = 16.dp) then
+                        Modifier.width(40.dp) then
                         Modifier.gravity(Alignment.CenterVertically)
             )
-            Column(
-                modifier = Modifier.padding(end = 16.dp)
-            ) {
+            Column {
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.h6,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+
                 if (!item.caster.isBlank()) {
                     Text(
                         text = item.caster,
@@ -67,8 +69,8 @@ fun ScheduleItemCard(item: BonjwaScheduleItem) {
                 }
             }
         }
-
     }
+
 }
 
 @Preview("Schedule Item Card (Dark)")

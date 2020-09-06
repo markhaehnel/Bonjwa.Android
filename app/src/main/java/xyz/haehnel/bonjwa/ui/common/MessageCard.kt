@@ -1,20 +1,20 @@
 package xyz.haehnel.bonjwa.ui.common
 
 import androidx.annotation.DrawableRes
-import androidx.compose.Composable
-import androidx.ui.core.Alignment
-import androidx.ui.core.Modifier
-import androidx.ui.foundation.Icon
-import androidx.ui.foundation.Text
-import androidx.ui.foundation.currentTextStyle
-import androidx.ui.layout.*
-import androidx.ui.material.MaterialTheme
-import androidx.ui.material.Surface
-import androidx.ui.res.stringResource
-import androidx.ui.res.vectorResource
-import androidx.ui.text.style.TextAlign
+import androidx.compose.foundation.Icon
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.currentTextStyle
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
-import androidx.ui.unit.dp
 import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.ui.darkTheme
 import xyz.haehnel.bonjwa.ui.lightTheme
@@ -22,14 +22,14 @@ import xyz.haehnel.bonjwa.ui.lightTheme
 @Composable
 fun MessageCard(message: String, @DrawableRes drawable: Int? = null) {
     Column(
-        modifier = Modifier.fillMaxSize() + Modifier.padding(16.dp),
+        modifier = Modifier.fillMaxSize() then Modifier.padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
         if (drawable != null) {
             Icon(
                 asset = vectorResource(id = drawable),
-                modifier = Modifier.size(192.dp, 192.dp) +
-                        Modifier.gravity(Alignment.CenterHorizontally) +
+                modifier = Modifier.size(192.dp, 192.dp) then
+                        Modifier.gravity(Alignment.CenterHorizontally) then
                         Modifier.padding(bottom = 16.dp)
             )
         }

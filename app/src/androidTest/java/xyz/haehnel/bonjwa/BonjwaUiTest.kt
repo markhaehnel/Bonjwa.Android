@@ -1,6 +1,5 @@
 package xyz.haehnel.bonjwa
 
-import androidx.ui.test.assertIsDisplayed
 import androidx.ui.test.createComposeRule
 import androidx.ui.test.findByTag
 import org.junit.Before

@@ -1,12 +1,11 @@
 package xyz.haehnel.bonjwa.ui.events
 
-import androidx.compose.Composable
-import androidx.ui.core.Modifier
-import androidx.ui.foundation.VerticalScroller
-import androidx.ui.layout.Column
-import androidx.ui.layout.fillMaxWidth
-import androidx.ui.material.Divider
-import androidx.ui.res.stringResource
+import androidx.compose.foundation.ScrollableColumn
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.Divider
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.model.BonjwaEventItem
 import xyz.haehnel.bonjwa.ui.common.MessageCard
@@ -14,14 +13,12 @@ import xyz.haehnel.bonjwa.ui.common.MessageCard
 @Composable
 fun EventItemList(events: List<BonjwaEventItem>) {
     if (!events.isNullOrEmpty()) {
-        VerticalScroller {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                for (item in events) {
-                    EventItemCard(item)
-                    Divider()
-                }
+        ScrollableColumn(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            for (item in events) {
+                EventItemCard(item)
+                Divider()
             }
         }
     } else {

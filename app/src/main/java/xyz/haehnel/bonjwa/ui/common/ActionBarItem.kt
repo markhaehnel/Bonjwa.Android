@@ -1,5 +1,5 @@
 package xyz.haehnel.bonjwa.ui.common
 
-import androidx.annotation.DrawableRes
+import androidx.compose.ui.graphics.vector.VectorAsset
 
-data class ActionBarItem(@DrawableRes val vectorResource: Int, val action: () -> Unit)
+data class ActionBarItem(val icon: VectorAsset, val action: () -> Unit)

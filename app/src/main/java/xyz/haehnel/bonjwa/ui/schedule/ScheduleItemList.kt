@@ -1,9 +1,10 @@
 package xyz.haehnel.bonjwa.ui.schedule
 
-import androidx.compose.Composable
-import androidx.compose.MutableState
-import androidx.compose.state
-import androidx.ui.res.stringResource
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
 import org.threeten.bp.DateTimeUtils
 import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
@@ -15,7 +16,7 @@ fun ScheduleItemList(
     schedule: List<BonjwaScheduleItem>,
     selectedTabIndex: MutableState<Int>
 ) {
-    val initialSelectionDone = state { false }
+    val initialSelectionDone = remember { mutableStateOf(false) }
 
     val weekdaysAsList = weekdays.toList()
 
@@ -39,7 +40,10 @@ fun ScheduleItemList(
 
     } else {
         if (schedule.isNullOrEmpty() && c.get(Calendar.DAY_OF_WEEK) == 2) {
-            MessageCard(stringResource(R.string.schedule_not_published), R.drawable.ic_no_schedule_published)
+            MessageCard(
+                stringResource(R.string.schedule_not_published),
+                R.drawable.ic_no_schedule_published
+            )
         } else {
             MessageCard(stringResource(R.string.schedule_not_live), R.drawable.ic_no_schedule_today)
         }
