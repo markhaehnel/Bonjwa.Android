@@ -11,7 +11,9 @@ import xyz.haehnel.bonjwa.ui.common.ActionBarItem
 class BonjwaAppViewModel : ViewModel() {
     private lateinit var _prefs: SharedPreferences
 
-    fun initialize(sharedPrefs: SharedPreferences) {
+    fun initialize(
+        sharedPrefs: SharedPreferences
+    ) {
         _prefs = sharedPrefs
         setAppTheme(_prefs.getInt(SETTINGS.APP_THEME, 0))
     }

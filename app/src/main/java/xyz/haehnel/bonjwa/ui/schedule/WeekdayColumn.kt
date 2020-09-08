@@ -11,7 +11,7 @@ import xyz.haehnel.bonjwa.model.BonjwaScheduleItem
 @Composable
 fun WeekdayColumn(weekdayItems: List<BonjwaScheduleItem>) {
     ScrollableColumn(
-        modifier = Modifier.fillMaxWidth() then Modifier.padding(top = 8.dp)
+        modifier = Modifier.fillMaxWidth() then Modifier.padding(top = 4.dp)
     )
     {
         for (item in weekdayItems) {

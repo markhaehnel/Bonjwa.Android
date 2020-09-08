@@ -1,12 +1,13 @@
 package xyz.haehnel.bonjwa.ui.settings
 
+import androidx.compose.foundation.Box
 import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.Text
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.material.Card
 import androidx.compose.material.ListItem
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -29,42 +30,54 @@ fun SettingsScreen(
         appViewModel.setTopBar(screenTitle)
     }
 
-    ScrollableColumn {
-        ListItem { Text(stringResource(R.string.settings_colorScheme)) }
-        val appThemeOptions = listOf(
-            stringResource(R.string.settings_colorScheme_dark),
-            stringResource(R.string.settings_colorScheme_light)
-        )
-        val (selectedOption, onOptionSelected) = remember {
-            mutableStateOf(appThemeOptions[appViewModel.appThemeIndex.value])
-        }
+    ScrollableColumn (modifier = Modifier.padding(top = 4.dp)) {
+        Card(
+            backgroundColor = MaterialTheme.colors.primaryVariant,
+            modifier = Modifier.fillMaxWidth() then Modifier.padding(
+                8.dp
+            ),
+            elevation = 4.dp,
+            shape = MaterialTheme.shapes.small
+        ) {
+            Column (modifier = Modifier.padding(16.dp, 16.dp)) {
+                val appThemeOptions = listOf(
+                    stringResource(R.string.settings_colorScheme_dark),
+                    stringResource(R.string.settings_colorScheme_light)
+                )
+                val (selectedOption, onOptionSelected) = remember {
+                    mutableStateOf(appThemeOptions[appViewModel.appThemeIndex.value])
+                }
 
-        appThemeOptions.forEachIndexed { index, text ->
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .selectable(
-                        selected = (text == selectedOption),
-                        onClick = {
-                            onOptionSelected(text)
-                            appViewModel.setAppTheme(index)
-                        }
-                    )
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
+                Text(stringResource(R.string.settings_colorScheme), style = MaterialTheme.typography.h6)
+
+                appThemeOptions.forEachIndexed { index, text ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = (text == selectedOption),
+                                onClick = {
+                                    onOptionSelected(text)
+                                    appViewModel.setAppTheme(index)
+                                }
+                            )
+                            .padding(top = 16.dp)
+                    ) {
 
 
-                RadioButton(
-                    selected = text == selectedOption,
-                    onClick = {
-                        onOptionSelected(text)
-                        appViewModel.setAppTheme(index)
+                        RadioButton(
+                            selected = text == selectedOption,
+                            onClick = {
+                                onOptionSelected(text)
+                                appViewModel.setAppTheme(index)
+                            }
+                        )
+                        Text(
+                            text = text,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
                     }
-                )
-                Text(
-                    text = text,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
+                }
             }
         }
     }

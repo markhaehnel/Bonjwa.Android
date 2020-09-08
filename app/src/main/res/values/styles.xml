@@ -2,7 +2,6 @@
 <resources>
 
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:statusBarColor">#121212</item>
-
+        <item name="android:statusBarColor">#242424</item>
     </style>
 </resources>

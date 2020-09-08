@@ -15,7 +15,7 @@ import xyz.haehnel.bonjwa.ui.common.*
 fun EventItemList(events: List<BonjwaEventItem>) {
     if (!events.isNullOrEmpty()) {
         ScrollableColumn(
-            modifier = Modifier.fillMaxWidth() then Modifier.padding(top = 8.dp)
+            modifier = Modifier.fillMaxWidth() then Modifier.padding(top = 4.dp)
         ) {
             for (item in events) {
                 EventItemCard(item)
