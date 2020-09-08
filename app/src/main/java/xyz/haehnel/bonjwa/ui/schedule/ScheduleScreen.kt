@@ -4,16 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -105,8 +102,8 @@ fun ScheduleScreen(
     }
 
 
-
     Column {
+
         WeekdayTabRow(weekdays, selectedTabIndex)
         Crossfade(screenState.value) { state ->
             when (state) {

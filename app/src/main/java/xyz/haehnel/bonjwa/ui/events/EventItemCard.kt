@@ -1,10 +1,7 @@
 package xyz.haehnel.bonjwa.ui.events
 
 import androidx.compose.foundation.Text
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -18,10 +15,15 @@ import xyz.haehnel.bonjwa.ui.lightTheme
 @Composable
 fun EventItemCard(item: BonjwaEventItem) {
     Card(
-        backgroundColor = MaterialTheme.colors.primaryVariant
+        backgroundColor = MaterialTheme.colors.primaryVariant,
+        modifier = Modifier.fillMaxWidth() then Modifier.preferredHeight(92.dp) then Modifier.padding(
+            8.dp
+        ),
+        elevation = 4.dp,
+        shape = MaterialTheme.shapes.small
     ) {
         Row(modifier = Modifier.padding(16.dp) then Modifier.fillMaxWidth()) {
-            Column {
+            Column(verticalArrangement = Arrangement.Center) {
                 Text(text = item.title, style = MaterialTheme.typography.h6)
                 Text(
                     text = item.date,
