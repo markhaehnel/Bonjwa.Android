@@ -1,12 +1,14 @@
 package xyz.haehnel.bonjwa.ui.schedule
 
+import androidx.compose.foundation.Box
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -33,25 +35,33 @@ fun ScheduleItemCard(item: BonjwaScheduleItem) {
         .toString()
 
     Card(
-        backgroundColor = when {
-            item.cancelled -> MaterialTheme.colors.error
-            item.isRunning -> MaterialTheme.colors.secondaryVariant
-            else -> MaterialTheme.colors.primaryVariant
-        },
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large
+        backgroundColor = MaterialTheme.colors.primaryVariant,
+        modifier = Modifier.fillMaxWidth() then Modifier.preferredHeight(92.dp) then Modifier.padding(
+            8.dp
+        ),
+        elevation = 4.dp,
+        shape = MaterialTheme.shapes.small
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-        ) {
+        Row {
+            Box(
+                modifier = Modifier.preferredWidth(6.dp) then Modifier.fillMaxHeight(),
+                backgroundColor = when {
+                    item.isRunning -> MaterialTheme.colors.secondary
+                    item.cancelled -> MaterialTheme.colors.error
+                    else -> Color.Transparent
+                }
+            )
             Text(
                 text = "$startText\n—\n$endText",
                 style = MaterialTheme.typography.subtitle2.copy(textAlign = TextAlign.Center),
-                modifier = Modifier.padding(end = 16.dp) then
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp) then
                         Modifier.width(40.dp) then
                         Modifier.gravity(Alignment.CenterVertically)
             )
-            Column {
+            Column(
+                modifier = Modifier.fillMaxHeight().wrapContentHeight(Alignment.CenterVertically),
+                verticalArrangement = Arrangement.Center
+            ) {
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.h6,

@@ -1,6 +1,11 @@
 package xyz.haehnel.bonjwa
 
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.setContent
@@ -8,6 +13,7 @@ import androidx.preference.PreferenceManager
 import com.jakewharton.threetenabp.AndroidThreeTen
 import xyz.haehnel.bonjwa.ui.BonjwaApp
 import xyz.haehnel.bonjwa.ui.BonjwaAppViewModel
+
 
 class MainActivity : AppCompatActivity() {
     private val appViewModel by viewModels<BonjwaAppViewModel>()

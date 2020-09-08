@@ -3,5 +3,6 @@
 
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:statusBarColor">#121212</item>
+
     </style>
 </resources>

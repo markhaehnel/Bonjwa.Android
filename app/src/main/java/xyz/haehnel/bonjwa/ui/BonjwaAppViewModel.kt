@@ -46,7 +46,6 @@ class BonjwaAppViewModel : ViewModel() {
         if (actions != null) topBarActions.addAll(actions)
         fabAction.value = newFabAction
     }
-
 }
 
 enum class ScreenName { SCHEDULE, EVENTS, SETTINGS }
