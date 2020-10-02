@@ -90,7 +90,7 @@ fun BonjwaApp(
                             icon = { Icon(item.third) },
                             label = { Text(item.second) },
                             selected = selectedItem == index,
-                            onSelect = {
+                            onClick = {
                                 selectedItem = index
                                 appViewModel.setCurrentScreen(item.first)
                             }
