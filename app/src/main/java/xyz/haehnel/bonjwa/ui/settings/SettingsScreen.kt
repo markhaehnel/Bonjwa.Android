@@ -22,7 +22,7 @@ fun SettingsScreen(
     appViewModel: BonjwaAppViewModel
 ) {
 
-    val screenTitle = "${stringResource(R.string.settings)}"
+    val screenTitle = stringResource(R.string.settings)
 
     onActive {
         appViewModel.setTopBar(screenTitle)

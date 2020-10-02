@@ -32,7 +32,7 @@ fun ErrorCard(error: String, onRetry: (() -> Unit)? = null) {
             if (onRetry != null) {
                 Button(
                     onClick = { onRetry() },
-                    modifier = Modifier.gravity(Alignment.CenterHorizontally)
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 ) {
                     Text(stringResource(R.string.retry))
                 }

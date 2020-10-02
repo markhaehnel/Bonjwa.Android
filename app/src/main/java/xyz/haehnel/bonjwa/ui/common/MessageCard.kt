@@ -29,7 +29,7 @@ fun MessageCard(message: String, @DrawableRes drawable: Int? = null) {
             Icon(
                 asset = vectorResource(id = drawable),
                 modifier = Modifier.size(192.dp, 192.dp) then
-                        Modifier.gravity(Alignment.CenterHorizontally) then
+                        Modifier.align(Alignment.CenterHorizontally) then
                         Modifier.padding(bottom = 16.dp)
             )
         }

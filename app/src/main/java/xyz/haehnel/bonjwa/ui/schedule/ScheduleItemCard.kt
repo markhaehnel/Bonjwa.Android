@@ -1,7 +1,8 @@
 package xyz.haehnel.bonjwa.ui.schedule
 
-import androidx.compose.foundation.Box
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.Text
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -43,19 +44,18 @@ fun ScheduleItemCard(item: BonjwaScheduleItem) {
     ) {
         Row {
             Box(
-                modifier = Modifier.preferredWidth(6.dp) then Modifier.fillMaxHeight(),
-                backgroundColor = when {
+                modifier = Modifier.preferredWidth(6.dp) then Modifier.fillMaxHeight() then Modifier.background(color = when {
                     item.isRunning -> MaterialTheme.colors.secondary
                     item.cancelled -> MaterialTheme.colors.error
                     else -> Color.Transparent
-                }
+                })
             )
             Text(
                 text = "$startText\n—\n$endText",
                 style = MaterialTheme.typography.subtitle2.copy(textAlign = TextAlign.Center),
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp) then
                         Modifier.width(40.dp) then
-                        Modifier.gravity(Alignment.CenterVertically)
+                        Modifier.align(Alignment.CenterVertically)
             )
             Column(
                 modifier = Modifier.fillMaxHeight().wrapContentHeight(Alignment.CenterVertically),
