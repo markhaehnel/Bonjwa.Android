@@ -11,11 +11,8 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import android.graphics.Color as AColor
 import xyz.haehnel.bonjwa.R
 import xyz.haehnel.bonjwa.ui.events.EventsScreen
 import xyz.haehnel.bonjwa.ui.schedule.ScheduleScreen
